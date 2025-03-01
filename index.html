@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>House of Nonyane Studios</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            background-color: #111;
+            color: white;
+        }
+        .container {
+            margin-top: 100px;
+        }
+        .loading-bar {
+            width: 100%;
+            background-color: #333;
+            height: 20px;
+            border-radius: 10px;
+            overflow: hidden;
+            margin: 20px auto;
+            max-width: 300px;
+        }
+        .progress {
+            height: 100%;
+            width: 0%;
+            background-color: #00ff00;
+            transition: width 0.5s;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Welcome to House of Nonyane Studios</h1>
+        <p>Loading, please wait...</p>
+        <div class="loading-bar">
+            <div class="progress" id="progress-bar"></div>
+        </div>
+    </div>
+
+    <script>
+        let progress = 0;
+        let progressBar = document.getElementById("progress-bar");
+
+        function updateProgress() {
+            if (progress < 100) {
+                progress += 10;
+                progressBar.style.width = progress + "%";
+                setTimeout(updateProgress, 300);
+            } else {
+                window.location.href = "nonyane.html"; // Redirect to nonyane.html
+            }
+        }
+
+        updateProgress();
+    </script>
+</body>
+</html>
