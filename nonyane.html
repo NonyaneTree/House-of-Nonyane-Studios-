@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nonyane Gaming Store</title>
+    <style>
+        /* Animated Black & White Background */
+        @keyframes animateBackground {
+            0% { background: black; }
+            50% { background: white; }
+            100% { background: black; }
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            color: white;
+            margin: 0;
+            padding: 0;
+            animation: animateBackground 5s infinite;
+            transition: background 0.5s;
+        }
+
+        /* Header Image */
+        .header img {
+            width: 100%;
+            max-height: 250px;
+            object-fit: cover;
+        }
+
+        /* Games Section */
+        .container {
+            margin: 20px auto;
+            width: 80%;
+            max-width: 800px;
+        }
+
+        .game, .app {
+            background: rgba(0, 0, 0, 0.7);
+            padding: 15px;
+            margin: 10px 0;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(255, 255, 255, 0.3);
+        }
+
+        .download-btn {
+            display: inline-block;
+            margin-top: 10px;
+            padding: 10px 15px;
+            background: #00ff00;
+            color: black;
+            text-decoration: none;
+            border-radius: 5px;
+            font-weight: bold;
+        }
+
+        .download-btn:hover {
+            background: #00cc00;
+        }
+
+        /* Payroll App Logo */
+        .app img {
+            width: 100px;
+            height: 100px;
+            object-fit: contain;
+            display: block;
+            margin: 0 auto 10px;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Header Image -->
+    <div class="header">
+        <img src="nonyane.png" alt="Nonyane Gaming Store">
+    </div>
+
+    <h1>Welcome to Nonyane Gaming Store</h1>
+    <p>Download your favorite games and apps below</p>
+
+    <div class="container">
+        <!-- Payroll System App -->
+        <div class="app">
+            <img src="payroll-logo.png" alt="Payroll System Logo">
+            <h2>Payroll System</h2>
+            <p>Manage salaries and payments with ease.</p>
+            <a href="payroll.html" class="download-btn">Open</a>
+        </div>
+
+        <!-- Games List -->
+        <div class="game">
+            <h2>Game 1: Shadow Quest</h2>
+            <p>A thrilling RPG adventure where you fight against the darkness.</p>
+            <a href="games/shadow-quest.zip" class="download-btn" download>Download</a>
+        </div>
+
+        <div class="game">
+            <h2>Game 2: Speed Racers</h2>
+            <p>High-speed racing with intense challenges and sharp turns.</p>
+            <a href="games/speed-racers.zip" class="download-btn" download>Download</a>
+        </div>
+
+        <div class="game">
+            <h2>Game 3: Galactic Wars</h2>
+            <p>Battle in space against alien invasions and become the hero of the galaxy.</p>
+            <a href="games/galactic-wars.zip" class="download-btn" download>Download</a>
+        </div>
+    </div>
+
+</body>
+</html>
