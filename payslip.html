@@ -24,16 +24,10 @@ input[type="text"], input[type="number"], textarea, select { width: 100%; paddin
     <h3>Step 0: Business Information</h3>
     <label>Business Name:</label>
     <input type="text" id="businessName" placeholder="Enter business name">
-
     <label>Business Address:</label>
     <textarea id="businessAddress" placeholder="Enter business address"></textarea>
-
     <label>Contact Info:</label>
     <input type="text" id="businessContact" placeholder="Enter contact number or email">
-
-    <label>Payslip Date:</label>
-    <input type="date" id="payslipDate">
-
     <hr>
 
     <h3>Step 1: Add Deductions</h3>
@@ -49,18 +43,16 @@ input[type="text"], input[type="number"], textarea, select { width: 100%; paddin
         <tbody></tbody>
     </table>
     <button onclick="addDeductionRow()">Add Deduction</button>
-    <button onclick="generatePayslips()">Generate Payslips</button>
+    <button onclick="generatePayslipButtons()">Make Payslips</button>
 
     <h3>Step 2: Preview & Download</h3>
     <div id="payslipList"></div>
-    <button id="downloadAllBtn" style="display:none;" onclick="downloadAllPayslips()">Download All Payslips</button>
 </div>
 
 <script>
 function addDeductionRow() {
     const tbody = document.querySelector("#deductionsTable tbody");
     const row = document.createElement("tr");
-
     row.innerHTML = `
         <td><input type="text" placeholder="e.g. Tax"></td>
         <td>
@@ -72,7 +64,6 @@ function addDeductionRow() {
         <td><input type="number" placeholder="Value"></td>
         <td><button onclick="this.closest('tr').remove()">Remove</button></td>
     `;
-
     tbody.appendChild(row);
 }
 
@@ -83,16 +74,14 @@ function getDeductions() {
         const name = row.querySelector("td:nth-child(1) input").value;
         const type = row.querySelector("td:nth-child(2) select").value;
         const value = parseFloat(row.querySelector("td:nth-child(3) input").value) || 0;
-        if (name && value > 0) {
-            deductions.push({ name, type, value });
-        }
+        if (name && value > 0) deductions.push({ name, type, value });
     });
     return deductions;
 }
 
-function generatePayslips() {
+// Create buttons for each employee
+function generatePayslipButtons() {
     const payrollData = JSON.parse(localStorage.getItem("payrollData") || "[]");
-    const deductions = getDeductions();
     const payslipList = document.getElementById("payslipList");
     payslipList.innerHTML = "";
 
@@ -102,34 +91,18 @@ function generatePayslips() {
     }
 
     payrollData.forEach((emp, index) => {
-        let grossPay = emp.totalPay;
-        let totalDeductions = 0;
-        let deductionsHTML = "";
-
-        deductions.forEach(d => {
-            let amount = d.type === "percent" ? (d.value / 100) * grossPay : d.value;
-            totalDeductions += amount;
-            deductionsHTML += `<p>${d.name}: -${amount.toFixed(2)}</p>`;
-        });
-
-        let netPay = grossPay - totalDeductions;
-
         const card = document.createElement("div");
         card.className = "employee-card";
         card.innerHTML = `
             <h3>${emp.name}</h3>
             <p><strong>Rate/hour:</strong> ${emp.rate}</p>
-            <p><strong>Hours/day:</strong> ${emp.hours}</p>
+            <p><strong>Hours/day:</strong> ${emp.hoursPerDay}</p>
             <p><strong>Days Present:</strong> ${emp.totalPresent}</p>
-            <p><strong>Gross Pay:</strong> ${grossPay.toFixed(2)}</p>
-            ${deductionsHTML}
-            <p><strong>Net Pay:</strong> ${netPay.toFixed(2)}</p>
-            <button onclick="downloadPayslip(${index})">Download Payslip</button>
+            <p><strong>Total Pay:</strong> ${emp.totalPay.toFixed(2)}</p>
+            <button onclick="downloadPayslip(${index})">Generate Payslip PDF</button>
         `;
         payslipList.appendChild(card);
     });
-
-    document.getElementById("downloadAllBtn").style.display = "inline-block";
 }
 
 function downloadPayslip(index) {
@@ -137,30 +110,29 @@ function downloadPayslip(index) {
     const deductions = getDeductions();
     const emp = payrollData[index];
 
-    // Business info & date
     const businessName = document.getElementById("businessName").value || "Company Name";
     const businessAddress = document.getElementById("businessAddress").value || "Business Address";
     const businessContact = document.getElementById("businessContact").value || "Contact Info";
-    const payslipDate = document.getElementById("payslipDate").value || new Date().toLocaleDateString();
 
     let grossPay = emp.totalPay;
     let totalDeductions = 0;
     const { jsPDF } = window.jspdf;
     const doc = new jsPDF();
 
+    // Header
     doc.setFontSize(16);
     doc.text(businessName, 10, 10);
     doc.setFontSize(10);
     doc.text(businessAddress, 10, 15);
     doc.text(`Contact: ${businessContact}`, 10, 20);
-    doc.text(`Date: ${payslipDate}`, 150, 20);
 
+    // Payslip Info
     doc.setFontSize(14);
     doc.text("Payslip", 10, 35);
     doc.setFontSize(12);
     doc.text(`Employee: ${emp.name}`, 10, 45);
     doc.text(`Rate/hour: ${emp.rate}`, 10, 55);
-    doc.text(`Hours/day: ${emp.hours}`, 10, 65);
+    doc.text(`Hours/day: ${emp.hoursPerDay}`, 10, 65);
     doc.text(`Days Present: ${emp.totalPresent}`, 10, 75);
     doc.text(`Gross Pay: ${grossPay.toFixed(2)}`, 10, 85);
 
@@ -179,13 +151,6 @@ function downloadPayslip(index) {
 
     doc.save(`${emp.name}_Payslip.pdf`);
 }
-
-function downloadAllPayslips() {
-    const payrollData = JSON.parse(localStorage.getItem("payrollData") || "[]");
-    payrollData.forEach((_, index) => {
-        downloadPayslip(index);
-    });
-}
 </script>
 </body>
-</html>
+    </html>
