@@ -90,9 +90,13 @@
     <button onclick="generateCalendar()">Generate Calendar</button>
 
     <div id="calendarContainer"></div>
-    <button onclick="calculatePayroll()" style="display:none;" id="calculateBtn">Calculate Payroll</button>
+    <div class="form-group">
+        <button onclick="calculatePayroll()" style="display:none;" id="calculateBtn">Calculate Payroll</button>
+        <button onclick="savePayroll()" style="display:none;" id="saveBtn">Save Payroll</button>
+        <button onclick="restartPayroll()" style="display:none;" id="restartBtn">Restart</button>
+        <button onclick="downloadPDF()" style="display:none;" id="downloadBtn">Download PDF</button>
+    </div>
     <div class="results" id="results"></div>
-    <button onclick="downloadPDF()" style="display:none;" id="downloadBtn">Download PDF</button>
 </div>
 
 <script>
@@ -204,31 +208,166 @@
     function downloadPDF() {
         const { jsPDF } = window.jspdf;
         const doc = new jsPDF();
-
         const employeeCount = parseInt(document.getElementById("employeeCount").value);
         const hrManagerName = document.getElementById("hrManagerName").value || "N/A";
+        const startDate = document.getElementById("startDate").value || "Start Date";
+        const endDate = document.getElementById("endDate").value || "End Date";
 
         doc.setFontSize(14);
         doc.text("Payroll Report", 10, 10);
         doc.setFontSize(11);
         doc.text(`HR Manager: ${hrManagerName}`, 10, 20);
+        doc.text(`Period: ${startDate} to ${endDate}`, 10, 26);
 
-        let y = 30;
+        let y = 36;
+
         for (let i = 1; i <= employeeCount; i++) {
-            if (y > 280) { // near page bottom
+            if (y > 270) {
                 doc.addPage();
                 y = 20;
             }
+
             const employeeName = document.getElementById(`employeeName${i}`).value || `Employee ${i}`;
-            const totalPay = document.getElementById(`totalPay${i}`).textContent || "0";
-            doc.text(`Name: ${employeeName}, Total Pay: ${totalPay}`, 10, y);
-            y += 10;
+            const rate = parseFloat(document.getElementById(`rate${i}`).value) || 0;
+            const hoursPerDay = parseFloat(document.getElementById(`hours${i}`).value) || 0;
+
+            doc.setFontSize(12);
+            doc.text(`Employee: ${employeeName}`, 10, y);
+            y += 6;
+            doc.setFontSize(10);
+            doc.text(`Rate/hour: ${rate}, Hours/day: ${hoursPerDay}`, 10, y);
+            y += 6;
+
+            // Table header
+            doc.text("Date | Attendance | Late Hours | Overtime Hours | Overtime %", 10, y);
+            y += 6;
+
+            const selects = document.querySelectorAll(`select[data-employee="${i}"]`);
+            const lateInputs = document.querySelectorAll(`input.lateHours[data-employee="${i}"]`);
+            const overtimeInputs = document.querySelectorAll(`input.overtimeHours[data-employee="${i}"]`);
+            const overtimePercentInputs = document.querySelectorAll(`input.overtimePercent[data-employee="${i}"]`);
+
+            selects.forEach((select, index) => {
+                if (y > 280) { 
+                    doc.addPage();
+                    y = 20;
+                }
+
+                const date = select.dataset.date;
+                const attendance = select.value;
+                const late = parseFloat(lateInputs[index].value) || 0;
+                const overtime = parseFloat(overtimeInputs[index].value) || 0;
+                const overtimePercent = parseFloat(overtimePercentInputs[index].value) || 0;
+
+                doc.text(`${date} | ${attendance} | ${late} | ${overtime} | ${overtimePercent}`, 10, y);
+                y += 6;
+            });
+
+            // Totals
+            const totalPresent = parseInt(document.getElementById(`totalPresent${i}`).textContent) || 0;
+            const totalPay = parseFloat(document.getElementById(`totalPay${i}`).textContent) || 0;
+            doc.text(`Total Present: ${totalPresent}, Total Pay: ${totalPay.toFixed(2)}`, 10, y);
+            y += 12;
         }
 
-        y += 10;
         doc.text("Signature: ____________________", 10, y);
+        doc.save("payroll_full_data.pdf");
+    }
 
-        doc.save("payroll_report.pdf");
+    // Save payroll data to localStorage (detailed daily info)
+    function savePayroll() {
+        const employeeCount = parseInt(document.getElementById("employeeCount").value);
+        const payrollData = [];
+
+        for (let i = 1; i <= employeeCount; i++) {
+            const selects = document.querySelectorAll(`select[data-employee="${i}"]`);
+            const lateInputs = document.querySelectorAll(`input.lateHours[data-employee="${i}"]`);
+            const overtimeInputs = document.querySelectorAll(`input.overtimeHours[data-employee="${i}"]`);
+            const overtimePercentInputs = document.querySelectorAll(`input.overtimePercent[data-employee="${i}"]`);
+
+            const dailyRecords = [];
+            selects.forEach((select, index) => {
+                dailyRecords.push({
+                    date: select.dataset.date,
+                    attendance: select.value,
+                    lateHours: parseFloat(lateInputs[index].value) || 0,
+                    overtimeHours: parseFloat(overtimeInputs[index].value) || 0,
+                    overtimePercent: parseFloat(overtimePercentInputs[index].value) || 0
+                });
+            });
+
+            payrollData.push({
+                name: document.getElementById(`employeeName${i}`).value || `Employee ${i}`,
+                rate: parseFloat(document.getElementById(`rate${i}`).value) || 0,
+                hoursPerDay: parseFloat(document.getElementById(`hours${i}`).value) || 0,
+                totalPresent: parseInt(document.getElementById(`totalPresent${i}`).textContent) || 0,
+                totalPay: parseFloat(document.getElementById(`totalPay${i}`).textContent) || 0,
+                dailyRecords: dailyRecords
+            });
+        }
+
+        localStorage.setItem("payrollData", JSON.stringify(payrollData));
+        alert("Payroll saved locally!");
+        document.getElementById("restartBtn").style.display = "inline-block";
+    }
+
+    // Load payroll data from localStorage
+    function loadPayroll() {
+        const payrollData = JSON.parse(localStorage.getItem("payrollData"));
+        if (!payrollData) return;
+
+        document.getElementById("employeeCount").value = payrollData.length;
+        const startDate = payrollData[0]?.dailyRecords[0]?.date || new Date().toISOString().split("T")[0];
+        const endDate = payrollData[0]?.dailyRecords[payrollData[0].dailyRecords.length - 1]?.date || new Date().toISOString().split("T")[0];
+        document.getElementById("startDate").value = startDate;
+        document.getElementById("endDate").value = endDate;
+
+        generateCalendar();
+
+        payrollData.forEach((employee, i) => {
+            const index = i + 1;
+            document.getElementById(`employeeName${index}`).value = employee.name;
+            document.getElementById(`rate${index}`).value = employee.rate;
+            document.getElementById(`hours${index}`).value = employee.hoursPerDay;
+
+            employee.dailyRecords.forEach((record, j) => {
+                const select = document.querySelectorAll(`select[data-employee="${index}"]`)[j];
+                const lateInput = document.querySelectorAll(`input.lateHours[data-employee="${index}"]`)[j];
+                const overtimeInput = document.querySelectorAll(`input.overtimeHours[data-employee="${index}"]`)[j];
+                const overtimePercentInput = document.querySelectorAll(`input.overtimePercent[data-employee="${index}"]`)[j];
+
+                select.value = record.attendance;
+                lateInput.value = record.lateHours;
+                overtimeInput.value = record.overtimeHours;
+                overtimePercentInput.value = record.overtimePercent;
+            });
+
+            document.getElementById(`totalPresent${index}`).textContent = employee.totalPresent;
+            document.getElementById(`totalPay${index}`).textContent = employee.totalPay.toFixed(2);
+        });
+
+        document.getElementById("calculateBtn").style.display = "block";
+        document.getElementById("saveBtn").style.display = "inline-block";
+        document.getElementById("downloadBtn").style.display = "inline-block";
+        document.getElementById("restartBtn").style.display = "inline-block";
+    }
+
+    // Automatically load payroll data if exists
+    window.onload = function() {
+        loadPayroll();
+    }
+
+    // Restart payroll
+    function restartPayroll() {
+        if (confirm("Are you sure you want to restart? All unsaved changes will be lost.")) {
+            localStorage.removeItem("payrollData");
+            document.getElementById("calendarContainer").innerHTML = "";
+            document.getElementById("results").innerHTML = "";
+            document.getElementById("calculateBtn").style.display = "none";
+            document.getElementById("saveBtn").style.display = "none";
+            document.getElementById("restartBtn").style.display = "none";
+            document.getElementById("downloadBtn").style.display = "none";
+        }
     }
 </script>
 
