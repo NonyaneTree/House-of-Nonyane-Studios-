@@ -105,9 +105,21 @@ function downloadAllPayslips() {
     payrollData.forEach((emp, i) => {
         if (i > 0) doc.addPage();
 
-        // Calculate basic pay
-        const basicPay = (emp.rate || 0) * (emp.totalHoursWorked || 0);
-        
+        // Calculate total hours worked
+        const totalHoursWorked = emp.dailyRecords.reduce((sum, d) => {
+            if (d.attendance === "P") {
+                const hoursWorked = Math.max(0, emp.hoursPerDay - (d.lateHours || 0));
+                return sum + hoursWorked;
+            }
+            return sum;
+        }, 0);
+
+        // Calculate worked days
+        const workedDays = emp.dailyRecords.filter(d => d.attendance === "P").length;
+
+        // ✅ Now use calculated hours for basic pay
+        const basicPay = (emp.rate || 0) * totalHoursWorked;
+
         // Calculate overtime pay
         const overtimePay = emp.dailyRecords.reduce((sum, d) => {
             if (d.attendance === "P") {
@@ -126,18 +138,6 @@ function downloadAllPayslips() {
         });
 
         const netPay = grossPay - totalDeductions;
-
-        // Calculate total hours worked
-        const totalHoursWorked = emp.dailyRecords.reduce((sum, d) => {
-            if (d.attendance === "P") {
-                const hoursWorked = Math.max(0, emp.hoursPerDay - (d.lateHours || 0));
-                return sum + hoursWorked;
-            }
-            return sum;
-        }, 0);
-
-        // Calculate worked days
-        const workedDays = emp.dailyRecords.filter(d => d.attendance === "P").length;
 
         // Format employed date
         let employedDateStr = "N/A";
