@@ -4,7 +4,6 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Terms and Conditions - Nonyane Investment Tree Payroll System</title>
-  <meta http-equiv="refresh" content="10;url=2.html">
   <style>
     body {
       font-family: Arial, sans-serif;
@@ -37,12 +36,11 @@
       margin-top: 20px;
       text-align: center;
     }
-    .btn {
-      display: block;
+    .actions {
       text-align: center;
-      margin-top: 15px;
+      margin-top: 25px;
     }
-    .btn a {
+    .btn {
       display: inline-block;
       padding: 10px 20px;
       background: #0073e6;
@@ -50,78 +48,105 @@
       text-decoration: none;
       border-radius: 5px;
       transition: background 0.3s;
+      cursor: pointer;
+      margin: 5px;
     }
-    .btn a:hover {
+    .btn:hover {
       background: #005bb5;
+    }
+    .checkbox {
+      margin-top: 15px;
+      text-align: center;
+    }
+    .checkbox input {
+      margin-right: 8px;
     }
   </style>
 </head>
 <body>
   <div class="container">
     <h1>Terms and Conditions</h1>
-    <p>
-      payroll system from Nonyane Investment Tree id designed to calculate payment for employees please note that the system use localstorage if used in chrome that is were user data is we are not liable to your information or hold any company information we believe in absolute privacy
-    </p>
+    <div id="content" style="white-space: pre-line;"></div>
 
-    <h2>1. Use of the System</h2>
-    <p>
-      By using this payroll system, you agree that it is provided solely for the purpose of calculating payment for employees. You acknowledge that the system stores data in the local storage of your browser and not on our servers.
-    </p>
-
-    <h2>2. Data Responsibility</h2>
-    <p>
-      Nonyane Investment Tree does not store, manage, or claim responsibility for any user or company information. All data remains on the device where the system is used. We are not liable for loss of data, misuse of data, or unauthorized access to your local storage.
-    </p>
-
-    <h2>3. Privacy Commitment</h2>
-    <p>
-      We believe in absolute privacy. This system is designed in a way that ensures we do not have access to, or control over, your stored information. Your data remains your sole responsibility.
-    </p>
-
-    <h2>4. Limitation of Liability</h2>
-    <p>
-      Nonyane Investment Tree shall not be held liable for any direct, indirect, incidental, or consequential damages arising from the use or inability to use this payroll system, including but not limited to data loss, errors, or interruptions.
-    </p>
-
-    <h2>5. Governing Law</h2>
-    <p>
-      These Terms and Conditions shall be governed by and construed in accordance with the laws of the Republic of South Africa.
-    </p>
-
-    <h2>6. Security of Information</h2>
-    <p>
-      Although the payroll system uses local storage for data management, users are responsible for ensuring their devices are secure. Nonyane Investment Tree is not responsible for unauthorized access caused by viruses, malware, or other external threats.
-    </p>
-
-    <h2>7. Third-Party Services</h2>
-    <p>
-      This system may interact with third-party platforms or browsers (such as Google Chrome). Nonyane Investment Tree is not responsible for any changes, data collection, or terms imposed by these third parties.
-    </p>
-
-    <h2>8. System Updates</h2>
-    <p>
-      We reserve the right to update, modify, or discontinue the payroll system at any time without prior notice. Continued use of the system after updates indicates acceptance of the revised terms.
-    </p>
-
-    <h2>9. Intellectual Property</h2>
-    <p>
-      The payroll system, including its design, features, and branding, is the intellectual property of Nonyane Investment Tree and may not be copied, modified, or distributed without written permission.
-    </p>
-
-    <h2>10. Termination of Use</h2>
-    <p>
-      We reserve the right to restrict or terminate access to the payroll system if misuse, abuse, or violation of these terms is detected.
-    </p>
-
-    <h2>11. Acceptance of Terms</h2>
-    <p>
-      By continuing to use the payroll system, you confirm that you have read, understood, and agreed to these Terms and Conditions.
-    </p>
-
-    <p class="note">You will be redirected shortly...</p>
-    <div class="btn">
-      <a href="manu.html">Continue Now</a>
+    <div class="actions">
+      <button class="btn" onclick="goNow()">Continue</button>
+    </div>
+    <div class="checkbox">
+      <label>
+        <input type="checkbox" id="skipBox"> I have read Terms and Conditions
+      </label>
     </div>
   </div>
+
+  <script>
+    const termsText = `
+Payroll system from Nonyane Investment Tree is designed to calculate payment for employees. Please note that the system uses localstorage if used in Chrome. That is where user data is. We are not liable to your information or hold any company information. We believe in absolute privacy.
+
+1. Use of the System
+By using this payroll system, you agree that it is provided solely for the purpose of calculating payment for employees. You acknowledge that the system stores data in the local storage of your browser and not on our servers.
+
+2. Data Responsibility
+Nonyane Investment Tree does not store, manage, or claim responsibility for any user or company information. All data remains on the device where the system is used. We are not liable for loss of data, misuse of data, or unauthorized access to your local storage.
+
+3. Privacy Commitment
+We believe in absolute privacy. This system is designed in a way that ensures we do not have access to, or control over, your stored information. Your data remains your sole responsibility.
+
+4. Limitation of Liability
+Nonyane Investment Tree shall not be held liable for any direct, indirect, incidental, or consequential damages arising from the use or inability to use this payroll system, including but not limited to data loss, errors, or interruptions.
+
+5. Governing Law
+These Terms and Conditions shall be governed by and construed in accordance with the laws of the Republic of South Africa.
+
+6. Security of Information
+Although the payroll system uses local storage for data management, users are responsible for ensuring their devices are secure. Nonyane Investment Tree is not responsible for unauthorized access caused by viruses, malware, or other external threats.
+
+7. Third-Party Services
+This system may interact with third-party platforms or browsers (such as Google Chrome). Nonyane Investment Tree is not responsible for any changes, data collection, or terms imposed by these third parties.
+
+8. System Updates
+We reserve the right to update, modify, or discontinue the payroll system at any time without prior notice. Continued use of the system after updates indicates acceptance of the revised terms.
+
+9. Intellectual Property
+The payroll system, including its design, features, and branding, is the intellectual property of Nonyane Investment Tree and may not be copied, modified, or distributed without written permission.
+
+10. Termination of Use
+We reserve the right to restrict or terminate access to the payroll system if misuse, abuse, or violation of these terms is detected.
+
+11. Acceptance of Terms
+By continuing to use the payroll system, you confirm that you have read, understood, and agreed to these Terms and Conditions.
+
+You will be redirected shortly...
+    `;
+
+    const contentDiv = document.getElementById("content");
+    const words = termsText.split(" ");
+    let i = 0;
+    let typingStopped = false;
+
+    function typeWords() {
+      if (typingStopped) return;
+      if (i < words.length) {
+        contentDiv.innerHTML += words[i] + " ";
+        i++;
+        setTimeout(typeWords, 120);
+      } else {
+        setTimeout(goNow, 2000); // auto redirect after typing
+      }
+    }
+
+    function goNow() {
+      typingStopped = true;
+      window.location.href = "Manu.html";
+    }
+
+    // Checkbox skip
+    document.getElementById("skipBox").addEventListener("change", function() {
+      if (this.checked) {
+        goNow();
+      }
+    });
+
+    window.onload = typeWords;
+  </script>
 </body>
 </html>
