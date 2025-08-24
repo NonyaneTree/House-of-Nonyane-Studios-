@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Payroll Chatbot - Nonyane Investment Tree</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #f5f5f5;
+      margin: 0;
+      padding: 0;
+    }
+    .chat-container {
+      max-width: 500px;
+      margin: 50px auto;
+      background: #fff;
+      border-radius: 10px;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+      padding: 20px;
+    }
+    .chat-box {
+      max-height: 400px;
+      overflow-y: auto;
+      padding: 10px;
+    }
+    .bot, .user {
+      margin: 10px 0;
+      padding: 10px;
+      border-radius: 10px;
+      max-width: 80%;
+    }
+    .bot {
+      background: #0073e6;
+      color: #fff;
+      align-self: flex-start;
+    }
+    .user {
+      background: #eee;
+      align-self: flex-end;
+    }
+    .options button {
+      display: block;
+      margin: 5px 0;
+      padding: 10px;
+      width: 100%;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      background: #0073e6;
+      color: #fff;
+      transition: 0.3s;
+    }
+    .options button:hover {
+      background: #005bb5;
+    }
+    input {
+      width: calc(100% - 60px);
+      padding: 10px;
+      margin-top: 10px;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+    }
+    button.send {
+      padding: 10px 20px;
+      border: none;
+      margin-left: 5px;
+      border-radius: 8px;
+      background: #0073e6;
+      color: #fff;
+      cursor: pointer;
+    }
+    button.send:hover {
+      background: #005bb5;
+    }
+  </style>
+</head>
+<body>
+  <div class="chat-container">
+    <div class="chat-box" id="chatBox">
+      <div class="bot">Hello! What is your name?</div>
+    </div>
+    <div id="inputArea">
+      <input type="text" id="userInput" placeholder="Type your name..." />
+      <button class="send" onclick="sendMessage()">Send</button>
+    </div>
+  </div>
+
+  <script>
+    const chatBox = document.getElementById("chatBox");
+    const userInput = document.getElementById("userInput");
+    let username = "";
+
+    function addMessage(text, sender) {
+      const div = document.createElement("div");
+      div.className = sender;
+      div.textContent = text;
+      chatBox.appendChild(div);
+      chatBox.scrollTop = chatBox.scrollHeight;
+    }
+
+    function sendMessage() {
+      const text = userInput.value.trim();
+      if (text === "") return;
+      addMessage(text, "user");
+      userInput.value = "";
+
+      if (!username) {
+        username = text;
+        setTimeout(() => {
+          addMessage(`Welcome ${username}, how can I assist you with the payroll system today?`, "bot");
+          showOptions();
+        }, 500);
+      }
+    }
+
+    function showOptions() {
+      const optionsDiv = document.createElement("div");
+      optionsDiv.className = "options";
+      optionsDiv.innerHTML = `
+        <button onclick="handleOption('howPayrollWorks')">How payroll works</button>
+        <button onclick="handleOption('calculatePayslips')">How payslips are calculated</button>
+        <button onclick="handleOption('deductions')">How deductions work</button>
+        <button onclick="handleOption('pdfPayslips')">Download PDF payslips</button>
+        <button onclick="handleOption('dataPrivacy')">Is my payroll data safe?</button>
+        <button onclick="handleOption('contactIssues')">Payment or system issues</button>
+      `;
+      chatBox.appendChild(optionsDiv);
+      chatBox.scrollTop = chatBox.scrollHeight;
+    }
+
+    function handleOption(option) {
+      if (option === "howPayrollWorks") {
+        addMessage("The payroll system tracks employee attendance, hours worked, late hours, and overtime. It calculates total pay by multiplying worked hours by rate per hour and adding overtime pay.", "bot");
+      }
+      else if (option === "calculatePayslips") {
+        addMessage("Payslips are calculated using the formula: Total Hours Worked x Rate per Hour + Overtime Pay - Deductions. You can customize deductions and theme color before generating the payslips.", "bot");
+      }
+      else if (option === "deductions") {
+        addMessage("You can add deductions such as tax, insurance, or other fees. Deductions can be a flat amount or a percentage of gross pay. The system automatically subtracts them from total pay to calculate net pay.", "bot");
+      }
+      else if (option === "pdfPayslips") {
+        addMessage("After saving the payroll, you can download PDF payslips for all employees. The PDF includes company info, employee name, pay details, deductions, and net pay, ready for printing.", "bot");
+      }
+      else if (option === "dataPrivacy") {
+        addMessage("All payroll data is stored locally on your device using your browser's local storage. We do not access or store your data. Make sure to backup important data as we are not liable for loss.", "bot");
+      }
+      else if (option === "contactIssues") {
+        addMessage("For payment issues, errors, or technical problems, please contact HR or visit our support page.", "bot");
+      }
+    }
+  </script>
+</body>
+</html>
