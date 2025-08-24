@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Contact Us - Payroll</title>
+<style>
+body { font-family: Arial; display:flex; justify-content:center; align-items:center; height:100vh; margin:0; background:#f5f5f5; }
+.contact-container { background:#fff; padding:30px; border-radius:10px; box-shadow:0 5px 20px rgba(0,0,0,0.1); width:100%; max-width:500px; }
+.contact-container h2 { text-align:center; margin-bottom:20px; color:#333; }
+.contact-container input, .contact-container textarea, .contact-container button { width:100%; padding:10px; margin-bottom:15px; border-radius:5px; border:1px solid #ccc; font-size:14px; }
+.contact-container textarea { resize: vertical; height:120px; }
+.contact-container button { background:#007BFF; color:#fff; border:none; font-size:16px; cursor:pointer; }
+.contact-container button:hover { background:#0056b3; }
+.message { text-align:center; font-weight:bold; margin-bottom:15px; }
+.message.success { color:green; }
+.message.error { color:red; }
+</style>
+</head>
+<body>
+
+<div class="contact-container">
+<h2>Contact Us - Payroll</h2>
+<div id="response" class="message"></div>
+
+<form id="contactForm">
+  <input type="text" id="name" placeholder="Your Name" required>
+  <input type="email" id="email" placeholder="Your Email" required>
+  <input type="tel" id="contact" placeholder="Your Contact Number" required>
+  <input type="text" id="subject" placeholder="Subject" required>
+  <textarea id="message" placeholder="Your Message" required></textarea>
+  <button type="submit">Send</button>
+</form>
+</div>
+
+<script>
+const BOT_TOKEN = "YOUR_BOT_TOKEN";  // Replace with your bot token
+const CHAT_ID = "YOUR_CHAT_ID";      // Replace with your chat ID
+
+document.getElementById("contactForm").addEventListener("submit", async function(e){
+    e.preventDefault();
+
+    const name = encodeURIComponent(document.getElementById("name").value);
+    const email = encodeURIComponent(document.getElementById("email").value);
+    const contact = encodeURIComponent(document.getElementById("contact").value);
+    const subject = encodeURIComponent(document.getElementById("subject").value);
+    const message = encodeURIComponent(document.getElementById("message").value);
+
+    const text = `New Payroll Contact Form Message:\n\nName: ${name}\nEmail: ${email}\nContact: ${contact}\nSubject: ${subject}\nMessage:\n${message}`;
+
+    const url = `https://api.telegram.org/bot${BOT_TOKEN}/sendMessage?chat_id=${CHAT_ID}&text=${text}`;
+
+    try {
+        const response = await fetch(url);
+        const data = await response.json();
+        if(data.ok){
+            document.getElementById("response").textContent = "Message sent successfully!";
+            document.getElementById("response").className = "message success";
+            document.getElementById("contactForm").reset();
+        } else {
+            throw new Error(data.description);
+        }
+    } catch(err){
+        document.getElementById("response").textContent = "Oops! Something went wrong.";
+        document.getElementById("response").className = "message error";
+        console.error(err);
+    }
+});
+</script>
+
+</body>
+</html>
