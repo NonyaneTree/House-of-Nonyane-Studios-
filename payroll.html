@@ -1,0 +1,482 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Payroll Calendar with Payslips</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 20px;
+        }
+        .container {
+            max-width: 1000px;
+            margin: auto;
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        h2, h3 {
+            color: #333;
+        }
+        .form-group {
+            margin-bottom: 20px;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+        }
+        input, button, table {
+            width: 100%;
+            margin-bottom: 10px;
+        }
+        table {
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        table th, table td {
+            border: 1px solid #ccc;
+            text-align: center;
+            padding: 10px;
+        }
+        table th {
+            background-color: #f1f1f1;
+        }
+        button {
+            background-color: #007BFF;
+            color: white;
+            padding: 10px;
+            border: none;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+        .results {
+            margin-top: 20px;
+            font-weight: bold;
+        }
+        .deductions-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+        }
+        .deductions-table th, .deductions-table td {
+            border: 1px solid #ccc;
+            padding: 8px;
+            text-align: left;
+        }
+    </style>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.4.0/jspdf.umd.min.js"></script>
+</head>
+<body>
+
+<div class="container">
+    <h2>Payroll Calendar with Late Coming and Overtime</h2>
+    <div class="form-group">
+        <label for="startDate">Start Date:</label>
+        <input type="date" id="startDate">
+    </div>
+    <div class="form-group">
+        <label for="endDate">End Date:</label>
+        <input type="date" id="endDate">
+    </div>
+    <div class="form-group">
+        <label for="employeeCount">Number of Employees:</label>
+        <input type="number" id="employeeCount" placeholder="Enter the number of employees">
+    </div>
+    <div class="form-group">
+        <label for="overtimeHoursPerUnit">Hours Per Overtime Unit:</label>
+        <input type="number" id="overtimeHoursPerUnit" placeholder="E.g., 1 overtime = 2 hours">
+    </div>
+    <div class="form-group">
+        <label for="hrManagerName">HR Manager Name:</label>
+        <input type="text" id="hrManagerName" placeholder="Enter HR Manager's name">
+    </div>
+    <button onclick="generateCalendar()">Generate Calendar</button>
+
+    <div id="calendarContainer"></div>
+    <div class="form-group">
+        <button onclick="calculatePayroll()" style="display:none;" id="calculateBtn">Calculate Payroll</button>
+        <button onclick="savePayroll()" style="display:none;" id="saveBtn">Save Payroll</button>
+        <button onclick="restartPayroll()" style="display:none;" id="restartBtn">Restart</button>
+        <button onclick="downloadPDF()" style="display:none;" id="downloadBtn">Download PDF</button>
+    </div>
+    <div class="results" id="results"></div>
+
+    <h2>Payslip Designer - All Employees</h2>
+    <h3>Step 0: Business Information</h3>
+    <label>Business Name:</label>
+    <input type="text" id="businessName" placeholder="Enter business name">
+    <label>Business Address:</label>
+    <textarea id="businessAddress" placeholder="Enter business address"></textarea>
+    <label>Contact Info:</label>
+    <input type="text" id="businessContact" placeholder="Enter contact number or email">
+    <label>Theme Color:</label>
+    <input type="color" id="themeColor" value="#007BFF">
+    <label>Payslip Date:</label>
+    <input type="date" id="payslipDate">
+    <hr>
+
+    <h3>Step 1: Add Deductions</h3>
+    <table class="deductions-table" id="deductionsTable">
+        <thead>
+            <tr>
+                <th>Deduction Name</th>
+                <th>Type</th>
+                <th>Rate/Amount</th>
+                <th>Action</th>
+            </tr>
+        </thead>
+        <tbody></tbody>
+    </table>
+    <button onclick="addDeductionRow()">Add Deduction</button>
+    <button onclick="downloadAllPayslips()">Download All Payslips</button>
+</div>
+
+<script>
+    function generateCalendar() {
+        const startDate = new Date(document.getElementById("startDate").value);
+        const endDate = new Date(document.getElementById("endDate").value);
+        const employeeCount = parseInt(document.getElementById("employeeCount").value);
+        const calendarContainer = document.getElementById("calendarContainer");
+
+        if (!startDate || !endDate || startDate > endDate) {
+            alert("Please enter a valid date range.");
+            return;
+        }
+        if (employeeCount <= 0) {
+            alert("Please enter a valid number of employees.");
+            return;
+        }
+
+        let calendarHTML = '<table><thead><tr><th>Employee Name</th><th>Rate/Hour</th><th>Hours Worked/Day</th>';
+        const dates = [];
+        let currentDate = startDate;
+
+        while (currentDate <= endDate) {
+            const formattedDate = currentDate.toISOString().split("T")[0];
+            dates.push(formattedDate);
+            calendarHTML += `<th>${formattedDate}<br><span>Attendance</span> | <span>Late Hours</span> | <span>Overtime</span></th>`;
+            currentDate.setDate(currentDate.getDate() + 1);
+        }
+
+        calendarHTML += '<th>Total Present</th><th>Total Hours Worked</th><th>Total Pay</th></tr></thead><tbody>';
+        for (let i = 1; i <= employeeCount; i++) {
+            calendarHTML += `<tr>
+                                <td><input type="text" id="employeeName${i}" placeholder="Employee ${i} Name"></td>
+                                <td><input type="number" id="rate${i}" placeholder="Rate per hour"></td>
+                                <td><input type="number" id="hours${i}" placeholder="Hours worked per day"></td>`;
+            dates.forEach(date => {
+                calendarHTML += `<td>
+                                    <select data-employee="${i}" data-date="${date}">
+                                        <option value="P">P</option>
+                                        <option value="A">A</option>
+                                    </select>
+                                    <input type="number" placeholder="Late Hours" data-employee="${i}" data-date="${date}" class="lateHours">
+                                    <input type="number" placeholder="Overtime Hours" data-employee="${i}" data-date="${date}" class="overtimeHours">
+                                    <input type="number" placeholder="Overtime %" data-employee="${i}" data-date="${date}" class="overtimePercent">
+                                </td>`;
+            });
+            calendarHTML += `<td id="totalPresent${i}">0</td>
+                             <td id="totalHoursWorked${i}">0</td>
+                             <td id="totalPay${i}">0</td></tr>`;
+        }
+        calendarHTML += '</tbody></table>';
+        calendarContainer.innerHTML = calendarHTML;
+
+        document.getElementById("calculateBtn").style.display = "block";
+        document.getElementById("saveBtn").style.display = "inline-block"; // Show save button
+        document.getElementById("downloadBtn").style.display = "none"; // Hide download button initially
+    }
+
+    function calculatePayroll() {
+        const employeeCount = parseInt(document.getElementById("employeeCount").value);
+        const hoursPerOvertimeUnit = parseFloat(document.getElementById("overtimeHoursPerUnit").value) || 1;
+        const resultsDiv = document.getElementById("results");
+        let grandTotalPay = 0;
+
+        for (let i = 1; i <= employeeCount; i++) {
+            const rate = parseFloat(document.getElementById(`rate${i}`).value) || 0;
+            const hours = parseFloat(document.getElementById(`hours${i}`).value) || 0;
+
+            if (rate <= 0 || hours <= 0) {
+                alert(`Please enter valid rate and hours for Employee ${i}.`);
+                return;
+            }
+
+            const selects = document.querySelectorAll(`select[data-employee="${i}"]`);
+            const lateHoursInputs = document.querySelectorAll(`input.lateHours[data-employee="${i}"]`);
+            const overtimeHoursInputs = document.querySelectorAll(`input.overtimeHours[data-employee="${i}"]`);
+            const overtimePercentInputs = document.querySelectorAll(`input.overtimePercent[data-employee="${i}"]`);
+
+            let totalPresent = 0;
+            let totalHoursWorked = 0; // Initialize total hours worked
+            let totalOvertimePay = 0;
+
+            selects.forEach((select, index) => {
+                const lateHours = parseFloat(lateHoursInputs[index].value) || 0;
+                const overtimeHours = parseFloat(overtimeHoursInputs[index].value) || 0;
+                const overtimePercent = parseFloat(overtimePercentInputs[index].value) || 0;
+
+                if (select.value === "P") {
+                    totalPresent++;
+                    const workedHours = Math.max(0, hours - lateHours); // Deduct late hours
+                    totalHoursWorked += workedHours; // Sum total hours worked
+
+                    // Overtime calculation
+                    const overtimeRate = rate * (1 + (overtimePercent / 100));
+                    const overtimePay = (overtimeHours / hoursPerOvertimeUnit) * overtimeRate;
+                    totalOvertimePay += overtimePay;
+                }
+            });
+
+            const totalPay = (rate * totalHoursWorked) + totalOvertimePay;
+            document.getElementById(`totalPresent${i}`).textContent = totalPresent;
+            document.getElementById(`totalHoursWorked${i}`).textContent = totalHoursWorked; // Display total hours worked
+            document.getElementById(`totalPay${i}`).textContent = totalPay.toFixed(2);
+
+            grandTotalPay += totalPay;
+        }
+
+        resultsDiv.innerHTML = `Grand Total Payroll: <strong>${grandTotalPay.toFixed(2)}</strong>`;
+        document.getElementById("downloadBtn").style.display = "block"; // Show download button
+    }
+
+    function addDeductionRow() {
+        const tbody = document.querySelector("#deductionsTable tbody");
+        const row = document.createElement("tr");
+        row.innerHTML = `
+            <td><input type="text" placeholder="e.g. Tax"></td>
+            <td>
+                <select>
+                    <option value="percent">%</option>
+                    <option value="flat">Flat</option>
+                </select>
+            </td>
+            <td><input type="number" placeholder="Value"></td>
+            <td><button onclick="this.closest('tr').remove()">Remove</button></td>
+        `;
+        tbody.appendChild(row);
+    }
+
+    function getDeductions() {
+        const rows = document.querySelectorAll("#deductionsTable tbody tr");
+        let deductions = [];
+        rows.forEach(row => {
+            const name = row.querySelector("td:nth-child(1) input").value;
+            const type = row.querySelector("td:nth-child(2) select").value;
+            const value = parseFloat(row.querySelector("td:nth-child(3) input").value) || 0;
+            if (name && value > 0) deductions.push({ name, type, value });
+        });
+        localStorage.setItem("deductions", JSON.stringify(deductions));
+        return deductions;
+    }
+
+    function downloadAllPayslips() {
+        let payrollData = JSON.parse(localStorage.getItem("payrollData") || "[]");
+        if (payrollData.length === 0) {
+            alert("No payroll data found!");
+            return;
+        }
+
+        const businessName = document.getElementById("businessName").value || "Company Name";
+        const businessAddress = document.getElementById("businessAddress").value || "Business Address";
+        const businessContact = document.getElementById("businessContact").value || "Contact Info";
+        const themeColor = document.getElementById("themeColor").value || "#007BFF";
+        const deductions = getDeductions();
+        
+        const payslipDateInput = document.getElementById("payslipDate").value;
+        const payslipDate = payslipDateInput ? new Date(payslipDateInput).toLocaleDateString() : new Date().toLocaleDateString();
+
+        const { jsPDF } = window.jspdf;
+        const doc = new jsPDF();
+
+        payrollData.forEach((emp, i) => {
+            if (i > 0) doc.addPage();
+
+            const totalHoursWorked = emp.dailyRecords.reduce((sum, d) => {
+                if (d.attendance === "P") {
+                    const hoursWorked = Math.max(0, emp.hoursPerDay - (d.lateHours || 0));
+                    return sum + hoursWorked;
+                }
+                return sum;
+            }, 0);
+
+            const workedDays = emp.dailyRecords.filter(d => d.attendance === "P").length;
+
+            const basicPay = (emp.rate || 0) * totalHoursWorked;
+
+            const overtimePay = emp.dailyRecords.reduce((sum, d) => {
+                if (d.attendance === "P") {
+                    const overtimeRate = emp.rate * (1 + ((d.overtimePercent || 0) / 100));
+                    return sum + ((d.overtimeHours || 0) * overtimeRate);
+                }
+                return sum;
+            }, 0);
+
+            const grossPay = basicPay + overtimePay;
+
+            let totalDeductions = 0;
+            deductions.forEach(d => {
+                const amount = d.type === "percent" ? (d.value / 100) * grossPay : d.value;
+                totalDeductions += amount;
+            });
+
+            const netPay = grossPay - totalDeductions;
+
+            let employedDateStr = "N/A";
+            if (emp.employedDate) {
+                const d = new Date(emp.employedDate);
+                if (!isNaN(d.getTime())) {
+                    employedDateStr = d.toLocaleDateString();
+                } else {
+                    employedDateStr = emp.employedDate;
+                }
+            }
+
+            doc.setTextColor(themeColor);
+            doc.setFontSize(16);
+            doc.text(businessName, 10, 10);
+            doc.setTextColor(0,0,0);
+            doc.setFontSize(10);
+            doc.text(businessAddress, 10, 15);
+            doc.text(`Contact: ${businessContact}`, 10, 20);
+            doc.setTextColor(themeColor);
+            doc.setFontSize(14);
+            doc.text("Payslip", 10, 35);
+            doc.setTextColor(0,0,0);
+            doc.setFontSize(12);
+            doc.text(`Employee: ${emp.name}`, 10, 50);
+            doc.text(`Employed Date: ${employedDateStr}`, 10, 60);
+            doc.text(`Payslip Date: ${payslipDate}`, 10, 70);
+            doc.text(`Rate/hour: ${emp.rate}`, 10, 80);
+            doc.text(`Hours/day: ${emp.hoursPerDay}`, 10, 90);
+            doc.text(`Days Worked: ${workedDays}`, 10, 100);
+            doc.text(`Total Hours Worked: ${totalHoursWorked.toFixed(2)}`, 10, 110);
+            doc.text(`Basic Pay: ${basicPay.toFixed(2)}`, 10, 120);
+            doc.text(`Overtime Pay: ${overtimePay.toFixed(2)}`, 10, 130);
+            doc.text(`Gross Pay: ${grossPay.toFixed(2)}`, 10, 140);
+            let y = 160;
+            doc.text("Deductions:", 10, y);
+            y += 10;
+            deductions.forEach(d => {
+                const amount = d.type === "percent" ? (d.value / 100) * grossPay : d.value;
+                doc.text(`${d.name}: -${amount.toFixed(2)}`, 10, y);
+                y += 10;
+            });
+
+            doc.setTextColor(themeColor);
+            doc.text(`Net Pay: ${netPay.toFixed(2)}`, 10, y + 10);
+            doc.setTextColor(0,0,0);
+            doc.text("Signature (HR): ____________________", 10, y + 30);
+            doc.text("Signature (Employee): _______________", 10, y + 40);
+        });
+
+        doc.save("All_Payslips.pdf");
+    }
+
+    function savePayroll() {
+        const employeeCount = parseInt(document.getElementById("employeeCount").value);
+        const payrollData = [];
+
+        for (let i = 1; i <= employeeCount; i++) {
+            const selects = document.querySelectorAll(`select[data-employee="${i}"]`);
+            const lateInputs = document.querySelectorAll(`input.lateHours[data-employee="${i}"]`);
+            const overtimeInputs = document.querySelectorAll(`input.overtimeHours[data-employee="${i}"]`);
+            const overtimePercentInputs = document.querySelectorAll(`input.overtimePercent[data-employee="${i}"]`);
+
+            const dailyRecords = [];
+            selects.forEach((select, index) => {
+                dailyRecords.push({
+                    date: select.dataset.date,
+                    attendance: select.value,
+                    lateHours: parseFloat(lateInputs[index].value) || 0,
+                    overtimeHours: parseFloat(overtimeInputs[index].value) || 0,
+                    overtimePercent: parseFloat(overtimePercentInputs[index].value) || 0
+                });
+            });
+
+            payrollData.push({
+                name: document.getElementById(`employeeName${i}`).value || `Employee ${i}`,
+                rate: parseFloat(document.getElementById(`rate${i}`).value) || 0,
+                hoursPerDay: parseFloat(document.getElementById(`hours${i}`).value) || 0,
+                totalPresent: parseInt(document.getElementById(`totalPresent${i}`).textContent) || 0,
+                totalHoursWorked: parseInt(document.getElementById(`totalHoursWorked${i}`).textContent) || 0,
+                totalPay: parseFloat(document.getElementById(`totalPay${i}`).textContent) || 0,
+                dailyRecords: dailyRecords
+            });
+        }
+
+        localStorage.setItem("payrollData", JSON.stringify(payrollData));
+        alert("Payroll saved locally!");
+        document.getElementById("restartBtn").style.display = "inline-block";
+    }
+
+    // Automatically load payroll data if exists
+    window.onload = function() {
+        loadPayroll();
+    }
+
+    function loadPayroll() {
+        const payrollData = JSON.parse(localStorage.getItem("payrollData"));
+        if (!payrollData) return;
+
+        document.getElementById("employeeCount").value = payrollData.length;
+        const startDate = payrollData[0]?.dailyRecords[0]?.date || new Date().toISOString().split("T")[0];
+        const endDate = payrollData[0]?.dailyRecords[payrollData[0].dailyRecords.length - 1]?.date || new Date().toISOString().split("T")[0];
+        document.getElementById("startDate").value = startDate;
+        document.getElementById("endDate").value = endDate;
+
+        generateCalendar();
+
+        payrollData.forEach((employee, i) => {
+            const index = i + 1;
+            document.getElementById(`employeeName${index}`).value = employee.name;
+            document.getElementById(`rate${index}`).value = employee.rate;
+            document.getElementById(`hours${index}`).value = employee.hoursPerDay;
+
+            employee.dailyRecords.forEach((record, j) => {
+                const select = document.querySelectorAll(`select[data-employee="${index}"]`)[j];
+                const lateInput = document.querySelectorAll(`input.lateHours[data-employee="${index}"]`)[j];
+                const overtimeInput = document.querySelectorAll(`input.overtimeHours[data-employee="${index}"]`)[j];
+                const overtimePercentInput = document.querySelectorAll(`input.overtimePercent[data-employee="${index}"]`)[j];
+
+                select.value = record.attendance;
+                lateInput.value = record.lateHours;
+                overtimeInput.value = record.overtimeHours;
+                overtimePercentInput.value = record.overtimePercent;
+            });
+
+            document.getElementById(`totalPresent${index}`).textContent = employee.totalPresent;
+            document.getElementById(`totalHoursWorked${index}`).textContent = employee.totalHoursWorked; // Load total hours worked
+            document.getElementById(`totalPay${index}`).textContent = employee.totalPay.toFixed(2);
+        });
+
+        document.getElementById("calculateBtn").style.display = "block";
+        document.getElementById("saveBtn").style.display = "inline-block";
+        document.getElementById("downloadBtn").style.display = "inline-block";
+        document.getElementById("restartBtn").style.display = "inline-block";
+    }
+
+    function restartPayroll() {
+        if (confirm("Are you sure you want to restart? All unsaved changes will be lost.")) {
+            localStorage.removeItem("payrollData");
+            document.getElementById("calendarContainer").innerHTML = "";
+            document.getElementById("results").innerHTML = "";
+            document.getElementById("calculateBtn").style.display = "none";
+            document.getElementById("saveBtn").style.display = "none";
+            document.getElementById("restartBtn").style.display = "none";
+            document.getElementById("downloadBtn").style.display = "none";
+        }
+    }
+</script>
+
+<script async="async" data-cfasync="false" src="https://pl28326321.effectivegatecpm.com/860eb164159307ee6949b4b37d6a346a/invoke.js"></script>
+<div id="container-860eb164159307ee6949b4b37d6a346a"></div>
+
+</body>
+</html>
