@@ -2,66 +2,162 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
+    <title>House of Nonyane | Payroll Software</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>House of Nonyane Studios</title>
+
     <style>
+        * {
+            box-sizing: border-box;
+            font-family: "Segoe UI", Arial, sans-serif;
+        }
+
         body {
-            font-family: Arial, sans-serif;
-            text-align: center;
-            background-color: #111;
-            color: white;
+            margin: 0;
+            background: linear-gradient(135deg, #0b1022, #111b3a);
+            color: #ffffff;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
         }
+
+        header {
+            padding: 25px 40px;
+            background: rgba(0, 0, 0, 0.35);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        header h1 {
+            margin: 0;
+            font-size: 24px;
+            letter-spacing: 1px;
+        }
+
+        header span {
+            font-size: 13px;
+            opacity: 0.8;
+        }
+
+        main {
+            flex: 1;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 30px 20px;
+        }
+
         .container {
-            margin-top: 50px;
-        }
-        .loading-bar {
+            max-width: 700px;
             width: 100%;
-            background-color: #333;
-            height: 20px;
-            border-radius: 10px;
-            overflow: hidden;
-            margin: 20px auto;
-            max-width: 300px;
+            background: rgba(255,255,255,0.06);
+            backdrop-filter: blur(10px);
+            border-radius: 14px;
+            padding: 40px;
+            box-shadow: 0 25px 45px rgba(0,0,0,0.45);
+            text-align: center;
         }
-        .progress {
-            height: 100%;
-            width: 0%;
-            background-color: #00ff00;
-            transition: width 0.5s;
+
+        .container h2 {
+            margin-top: 10px;
+            font-size: 28px;
+            margin-bottom: 15px;
         }
-        img {
+
+        .container p {
+            font-size: 15px;
+            line-height: 1.7;
+            opacity: 0.9;
+            margin-bottom: 25px;
+        }
+
+        .payroll-image {
+            width: 180px;
             max-width: 100%;
-            height: auto;
-            margin-top: 20px;
+            margin: 25px auto;
+            display: block;
+            cursor: pointer;
+            transition: transform 0.3s ease, opacity 0.3s ease;
+        }
+
+        .payroll-image:hover {
+            transform: scale(1.06);
+            opacity: 0.9;
+        }
+
+        .info-box {
+            background: rgba(0,0,0,0.35);
             border-radius: 10px;
+            padding: 20px;
+            margin-top: 25px;
+            font-size: 14px;
+            line-height: 1.6;
+        }
+
+        footer {
+            padding: 18px;
+            text-align: center;
+            font-size: 12px;
+            opacity: 0.6;
         }
     </style>
 </head>
+
 <body>
+
+<header>
+    <h1>House of Nonyane</h1>
+    <span>Software Office & Digital Payroll Solutions</span>
+</header>
+
+<main>
     <div class="container">
-        <h1>Welcome to House of Nonyane Studios</h1>
-        <img src="nonyane1.png" alt="House of Nonyane Studios Logo">
-        <p>Loading, please wait...</p>
-        <div class="loading-bar">
-            <div class="progress" id="progress-bar"></div>
+
+        <!-- CLICKABLE PAYROLL IMAGE -->
+        <a href="payroll.html">
+            <img src="payroll.png" alt="Payroll Software System" class="payroll-image">
+        </a>
+
+        <h2>Office Payroll Software</h2>
+
+        <p>
+            House of Nonyane is a software-based office solution designed to support
+            payroll management systems for businesses, institutions, and private offices.
+            This platform focuses on structured payroll processing, digital record handling,
+            and system integration for modern organizations.
+        </p>
+
+        <p>
+            The software is built to support internal office operations such as salary structures,
+            payroll calculations, employee records, reporting systems, and future integrations
+            with financial and administrative tools.
+        </p>
+
+        <div class="info-box">
+            <strong>Purpose:</strong><br>
+            This website represents a payroll software platform intended for office use.
+            It does not provide public services and is designed strictly for internal
+            organizational payroll operations.
         </div>
+
+        <!-- ✅ ADSTERRA NATIVE BANNER (SAFE PLACEMENT) -->
+        <script async="async" data-cfasync="false"
+            src="https://pl28326321.effectivegatecpm.com/860eb164159307ee6949b4b37d6a346a/invoke.js">
+        </script>
+        <div id="container-860eb164159307ee6949b4b37d6a346a"></div>
+
+        <div class="info-box" style="margin-top:15px;">
+            <strong>Design & Development:</strong><br>
+            Designed by <strong>Nonyane Investment Tree</strong><br>
+            Software Architecture & Digital Systems Division
+        </div>
+
     </div>
+</main>
 
-    <script>
-        let progress = 0;
-        let progressBar = document.getElementById("progress-bar");
+<footer>
+    © 2025 House of Nonyane · Payroll Software Platform · All Rights Reserved
+</footer>
 
-        function updateProgress() {
-            if (progress < 100) {
-                progress += 10;
-                progressBar.style.width = progress + "%";
-                setTimeout(updateProgress, 300);
-            } else {
-                window.location.href = "nonyane.html"; // Redirect to nonyane.html
-            }
-        }
-
-        updateProgress();
-    </script>
 </body>
 </html>
