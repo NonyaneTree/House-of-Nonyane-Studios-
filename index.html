@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>House of Nonyane</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="google-adsense-account" content="ca-pub-7221396727211259">
+
+<style>
+    body {
+        margin: 0;
+        background-color: #0a0000;
+        color: white;
+        font-family: Arial, sans-serif;
+        text-align: center;
+    }
+
+    /* NAV BAR */
+    nav {
+        background: darkred;
+        padding: 12px 20px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    nav .logo {
+        font-size: 22px;
+        font-weight: bold;
+        letter-spacing: 2px;
+    }
+
+    select {
+        padding: 8px;
+        background: black;
+        color: red;
+        border: 2px solid red;
+        font-size: 16px;
+        cursor: pointer;
+    }
+
+    /* VIDEO */
+    #video-container {
+        position: relative;
+        max-width: 900px;
+        margin: 30px auto;
+        border: 4px solid red;
+        box-shadow: 0 0 20px red;
+    }
+
+    video {
+        width: 100%;
+        background: black;
+    }
+
+    #overlay {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(120, 0, 0, 0.85);
+        display: none;
+        align-items: center;
+        justify-content: center;
+        font-size: 28px;
+        font-weight: bold;
+        z-index: 10;
+    }
+
+    /* ABOUT SECTION */
+    #about {
+        display: none;
+        max-width: 800px;
+        margin: 30px auto;
+        padding: 20px;
+        border: 2px solid red;
+        background: #120000;
+        box-shadow: 0 0 15px red;
+    }
+
+    #about h2 {
+        color: red;
+        margin-bottom: 10px;
+    }
+
+    footer {
+        margin: 20px 0;
+        font-size: 14px;
+        color: #ffaaaa;
+    }
+</style>
+</head>
+
+<body>
+
+<nav>
+    <div class="logo">HOUSE OF NONYANE</div>
+    <select onchange="menuAction(this.value)">
+        <option value="">Menu</option>
+        <option value="video">Watch</option>
+        <option value="about">About the Founder(s)</option>
+    </select>
+</nav>
+
+<div id="video-container">
+    <div id="overlay">Going for a break<br>Will be back after ads</div>
+
+    <video id="player" controls autoplay>
+        <source src="vid1.mp4" type="video/mp4">
+        Your browser does not support video playback.
+    </video>
+</div>
+
+<div id="about">
+    <h2>About House of Nonyane</h2>
+
+    <p>
+        <strong>houseofnonyane.store</strong> is a South African-owned digital
+        streaming platform built to showcase original African content,
+        independent productions, and future-focused media experiences.
+    </p>
+
+    <p>
+        The platform was created to give creators, storytellers, and producers
+        direct ownership of their work while delivering high-quality video
+        entertainment to audiences across South Africa and beyond.
+    </p>
+
+    <p>
+        House of Nonyane focuses on:
+    </p>
+
+    <ul style="text-align:left; max-width:600px; margin: 0 auto; color:#ffcccc;">
+        <li>🎬 African-led films, series, and digital shows</li>
+        <li>📡 Streaming video-on-demand and live broadcasts</li>
+        <li>🎶 Music visuals, performances, and culture-driven content</li>
+        <li>📱 Mobile-first viewing for local and global audiences</li>
+        <li>🛡️ Creator ownership and platform independence</li>
+    </ul>
+
+    <p>
+        Built in <strong>South Africa</strong>, the platform represents a new
+        generation of African streaming — independent, bold, and owned by its
+        creators. House of Nonyane is not just a streaming service, but a digital
+        home for culture, innovation, and legacy.
+    </p>
+
+    <p>
+        <strong>House of Nonyane</strong> — where African stories stream without limits.
+    </p>
+</div>
+
+<footer>© House of Nonyane</footer>
+
+<script>
+    const player = document.getElementById("player");
+    const overlay = document.getElementById("overlay");
+    const about = document.getElementById("about");
+    const videoContainer = document.getElementById("video-container");
+
+    let adPlayed = false;
+    const adVideo = "ad1.mp4";
+
+    function menuAction(value) {
+        if (value === "about") {
+            about.style.display = "block";
+            videoContainer.style.display = "none";
+        } else if (value === "video") {
+            about.style.display = "none";
+            videoContainer.style.display = "block";
+        }
+    }
+
+    player.addEventListener("timeupdate", () => {
+        if (player.currentTime > 15 && !adPlayed) {
+            adPlayed = true;
+            overlay.style.display = "flex";
+
+            setTimeout(() => {
+                player.src = adVideo;
+                player.play();
+            }, 2000);
+        }
+    });
+
+    player.addEventListener("ended", () => {
+        if (player.src.includes("ad1.mp4")) {
+            overlay.style.display = "none";
+            player.src = "vid1.mp4";
+            player.currentTime = 16;
+            player.play();
+        }
+    });
+</script>
+
+</body>
+</html>
