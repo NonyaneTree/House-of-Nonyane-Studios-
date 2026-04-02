@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Meeting Agenda</title>
+<style>
+    body {
+        font-family: Arial, sans-serif;
+        padding: 20px;
+        background-color: #f4f4f4;
+        color: #333;
+    }
+    header {
+        font-size: 28px;
+        font-weight: bold;
+        margin-bottom: 20px;
+        color: #0056b3;
+    }
+    label {
+        display: block;
+        margin: 10px 0;
+        font-weight: bold;
+    }
+    input[type="date"],
+    input[type="time"],
+    input[type="text"] {
+        width: 100%;
+        padding: 10px;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+        font-size: 16px;
+    }
+    #editor {
+        border: 1px solid #ccc;
+        padding: 10px;
+        min-height: 200px;
+        background-color: #fff;
+        border-radius: 4px;
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    }
+    .bullet::before {
+        content: "• ";
+    }
+    .misspelled {
+        color: red;
+        cursor: pointer;
+        text-decoration: underline;
+    }
+    button {
+        background-color: #0056b3;
+        color: white;
+        border: none;
+        border-radius: 4px;
+        padding: 10px 15px;
+        font-size: 16px;
+        cursor: pointer;
+        margin-right: 10px;
+    }
+    button:hover {
+        background-color: #004494;
+    }
+</style>
+</head>
+<body>
+<header>Meeting Agenda</header>
+<label>Date: <input type="date" id="date"></label>
+<label>Time: <input type="time" id="time"></label>
+<br><br>
+
+<input type="text" id="agendaHeader" placeholder="Enter agenda header">
+<br><br>
+<div id="editor" contenteditable="true"></div>
+<br>
+<label>Assistant Name: <input type="text" id="assistant"></label>
+<br><br>
+<button onclick="saveData()">Save</button>
+<button onclick="resetData()">Reset</button>
+<button onclick="downloadPDF()">Download PDF</button>
+
+<script>
+let dictionary = new Set();
+let dictionaryLoaded = false;
+
+// Fetch from another HTML file (word.html)
+fetch('word.html')
+  .then(res => res.text())
+  .then(html => {
+      let parser = new DOMParser();
+      let doc = parser.parseFromString(html, 'text/html');
+      let text = doc.body.innerText;
+
+      dictionary = new Set(
+        text.split(/\s+/).map(w => w.trim().toLowerCase()).filter(Boolean)
+      );
+
+      dictionaryLoaded = true;
+      console.log('Loaded dictionary from word.html:', dictionary.size);
+  })
+  .catch(err => console.error('Error loading word.html', err));
+
+const editor = document.getElementById("editor");
+
+editor.addEventListener("keydown", function(e){
+    if(e.key === "Enter"){
+        e.preventDefault();
+        document.execCommand("insertHTML", false, "<div class='bullet'><br></div>");
+    }
+});
+
+let typingTimer;
+editor.addEventListener("input", () => {
+    clearTimeout(typingTimer);
+    typingTimer = setTimeout(checkSpelling, 300);
+});
+
+function checkSpelling(){
+    if(!dictionaryLoaded) return;
+
+    let text = editor.innerText;
+    let words = text.split(/\s+/);
+    let html = "";
+
+    words.forEach(word => {
+        if(word.trim() === "") return;
+
+        if(!dictionary.has(word.toLowerCase())){
+            html += `<span class='misspelled' onclick='suggest("${word}")'>${word}</span> `;
+        } else {
+            html += word + " ";
+        }
+    });
+
+    editor.innerHTML = html;
+}
+
+function suggest(word){
+    let suggestions = [...dictionary].filter(w => w.startsWith(word[0])).slice(0,5);
+    alert("Suggestions: " + suggestions.join(", "));
+}
+
+function saveData(){
+    localStorage.setItem("agenda", editor.innerHTML);
+    localStorage.setItem("date", document.getElementById("date").value);
+    localStorage.setItem("time", document.getElementById("time").value);
+    localStorage.setItem("header", document.getElementById("agendaHeader").value);
+    localStorage.setItem("assistant", document.getElementById("assistant").value);
+}
+
+function loadData(){
+    editor.innerHTML = localStorage.getItem("agenda") || "";
+    document.getElementById("date").value = localStorage.getItem("date") || "";
+    document.getElementById("time").value = localStorage.getItem("time") || "";
+    document.getElementById("agendaHeader").value = localStorage.getItem("header") || "";
+    document.getElementById("assistant").value = localStorage.getItem("assistant") || "";
+}
+
+function resetData(){
+    localStorage.clear();
+    location.reload();
+}
+
+function downloadPDF() {
+    const date = document.getElementById("date").value;
+    const time = document.getElementById("time").value;
+    const header = document.getElementById("agendaHeader").value;
+    const assistant = document.getElementById("assistant").value;
+    const agendaContent = editor.innerHTML;
+
+    const pdfContent = `
+        <html>
+        <head>
+            <title>Meeting Agenda</title>
+            <style>
+                body { font-family: Arial, sans-serif; }
+                h1 { color: #0056b3; }
+                .header { margin: 20px 0; }
+                .agenda { margin: 20px 0; }
+            </style>
+        </head>
+        <body>
+            <h1>${header}</h1>
+            <div class="header">
+                <p><strong>Date:</strong> ${date}</p>
+                <p><strong>Time:</strong> ${time}</p>
+                <p><strong>Assistant Name:</strong> ${assistant}</p>
+            </div>
+            <div class="agenda">${agendaContent}</div>
+        </body>
+        </html>
+    `;
+
+    const win = window.open('', '', 'height=700,width=700');
+    win.document.write(pdfContent);
+    win.document.close();
+    win.print();
+}
+
+window.onload = loadData;
+</script>
+</body>
+</html>
