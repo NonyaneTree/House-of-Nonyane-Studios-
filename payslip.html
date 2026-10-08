@@ -10,216 +10,259 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.25/jspdf.plugin.autotable.min.js"></script>
 
 <style>
-    * {
-        box-sizing: border-box;
-    }
+* {
+    box-sizing: border-box;
+}
+
+body {
+    font-family: Arial, sans-serif;
+    background: #f4f4f4;
+    margin: 0;
+    padding: 20px;
+}
+
+.container {
+    max-width: 1200px;
+    margin: auto;
+    background: white;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.12);
+}
+
+h1, h2, h3 {
+    color: #222;
+}
+
+.notice {
+    background: #eaf4ff;
+    border-left: 5px solid #007BFF;
+    padding: 15px;
+    margin-bottom: 20px;
+    border-radius: 5px;
+}
+
+.warning {
+    background: #fff3cd;
+    border-left: 5px solid #ffc107;
+    padding: 12px;
+    margin-top: 10px;
+    border-radius: 5px;
+    color: #856404;
+}
+
+.business-grid,
+.employee-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: 15px;
+}
+
+.section {
+    background: #fafafa;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    padding: 18px;
+    margin-bottom: 20px;
+}
+
+.section h3 {
+    color: #007BFF;
+    margin-top: 0;
+}
+
+label {
+    display: block;
+    font-weight: bold;
+    margin-bottom: 6px;
+}
+
+.required {
+    color: #dc3545;
+}
+
+input,
+select,
+textarea,
+button {
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 10px;
+    border-radius: 5px;
+    border: 1px solid #ccc;
+    font-size: 14px;
+}
+
+input:focus,
+select:focus,
+textarea:focus {
+    outline: none;
+    border-color: #007BFF;
+    box-shadow: 0 0 0 2px rgba(0,123,255,0.1);
+}
+
+textarea {
+    resize: vertical;
+}
+
+button {
+    background: #007BFF;
+    color: white;
+    border: none;
+    cursor: pointer;
+    font-weight: bold;
+}
+
+button:hover {
+    background: #0056b3;
+}
+
+.green {
+    background: #28a745;
+}
+
+.green:hover {
+    background: #1e7e34;
+}
+
+.red {
+    background: #dc3545;
+}
+
+.red:hover {
+    background: #b02a37;
+}
+
+.employee-card {
+    background: white;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    padding: 18px;
+    margin-bottom: 20px;
+}
+
+.employee-card h3 {
+    margin-top: 0;
+    border-bottom: 2px solid #007BFF;
+    padding-bottom: 10px;
+}
+
+.payroll-box {
+    background: #f1f8ff;
+    border: 1px solid #b8dcff;
+    padding: 15px;
+    border-radius: 7px;
+    margin: 15px 0;
+}
+
+.payroll-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 10px;
+    margin-top: 12px;
+}
+
+.pay-item {
+    background: white;
+    border: 1px solid #ddd;
+    padding: 10px;
+    border-radius: 5px;
+}
+
+.pay-item span {
+    display: block;
+    color: #666;
+    font-size: 12px;
+    margin-bottom: 4px;
+}
+
+.pay-item strong {
+    font-size: 16px;
+    color: #111;
+}
+
+.net-box {
+    background: #e8f7ed;
+    border: 2px solid #28a745;
+    padding: 15px;
+    margin-top: 15px;
+    border-radius: 7px;
+    text-align: center;
+}
+
+.net-box .amount {
+    font-size: 25px;
+    font-weight: bold;
+    color: #218838;
+    margin-top: 8px;
+}
+
+.deductions-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 10px;
+}
+
+.deductions-table th,
+.deductions-table td {
+    border: 1px solid #ccc;
+    padding: 8px;
+    text-align: left;
+}
+
+.deductions-table th {
+    background: #f1f1f1;
+}
+
+.employee-actions {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+    margin-top: 15px;
+}
+
+.empty {
+    padding: 30px;
+    text-align: center;
+    background: #fff3cd;
+    border: 1px solid #ffeeba;
+    border-radius: 7px;
+    color: #856404;
+}
+
+.tax-required {
+    border: 2px solid #dc3545;
+    background: #fff8f8;
+}
+
+.tax-complete {
+    border: 2px solid #28a745;
+    background: #f8fff9;
+}
+
+@media(max-width: 600px) {
 
     body {
-        font-family: Arial, sans-serif;
-        background: #f4f4f4;
-        margin: 0;
-        padding: 20px;
+        padding: 8px;
     }
 
     .container {
-        max-width: 1200px;
-        margin: auto;
-        background: white;
-        padding: 20px;
-        border-radius: 10px;
-        box-shadow: 0 2px 12px rgba(0,0,0,0.12);
+        padding: 12px;
     }
 
-    h1, h2, h3 {
-        color: #222;
-    }
-
-    .notice {
-        background: #eaf4ff;
-        border-left: 5px solid #007BFF;
-        padding: 15px;
-        margin-bottom: 20px;
-        border-radius: 5px;
-    }
-
-    .business-grid,
-    .employee-grid {
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
-        gap: 15px;
-    }
-
-    .section {
-        background: #fafafa;
-        border: 1px solid #ddd;
-        border-radius: 8px;
-        padding: 18px;
-        margin-bottom: 20px;
-    }
-
-    .section h3 {
-        color: #007BFF;
-        margin-top: 0;
-    }
-
-    label {
-        display: block;
-        font-weight: bold;
-        margin-bottom: 6px;
-    }
-
-    input,
-    select,
-    textarea,
-    button {
-        width: 100%;
-        padding: 10px;
-        margin-bottom: 10px;
-        border-radius: 5px;
-        border: 1px solid #ccc;
-        font-size: 14px;
-    }
-
-    textarea {
-        resize: vertical;
-    }
-
-    button {
-        background: #007BFF;
-        color: white;
-        border: none;
-        cursor: pointer;
-        font-weight: bold;
-    }
-
-    button:hover {
-        background: #0056b3;
-    }
-
-    .green {
-        background: #28a745;
-    }
-
-    .green:hover {
-        background: #1e7e34;
-    }
-
-    .red {
-        background: #dc3545;
-    }
-
-    .red:hover {
-        background: #b02a37;
-    }
-
-    .employee-card {
-        background: white;
-        border: 1px solid #ddd;
-        border-radius: 8px;
-        padding: 18px;
-        margin-bottom: 20px;
-    }
-
-    .employee-card h3 {
-        margin-top: 0;
-        border-bottom: 2px solid #007BFF;
-        padding-bottom: 10px;
-    }
-
-    .payroll-box {
-        background: #f1f8ff;
-        border: 1px solid #b8dcff;
-        padding: 15px;
-        border-radius: 7px;
-        margin: 15px 0;
-    }
-
-    .payroll-grid {
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-        gap: 10px;
-    }
-
-    .pay-item {
-        background: white;
-        border: 1px solid #ddd;
-        padding: 10px;
-        border-radius: 5px;
-    }
-
-    .pay-item span {
-        display: block;
-        color: #666;
-        font-size: 12px;
-        margin-bottom: 4px;
-    }
-
-    .pay-item strong {
-        font-size: 16px;
-        color: #111;
-    }
-
-    .net-box {
-        background: #e8f7ed;
-        border: 2px solid #28a745;
-        padding: 15px;
-        margin-top: 15px;
-        border-radius: 7px;
-        text-align: center;
-    }
-
-    .net-box .amount {
-        font-size: 25px;
-        font-weight: bold;
-        color: #218838;
+    .employee-actions {
+        grid-template-columns: 1fr;
     }
 
     .deductions-table {
-        width: 100%;
-        border-collapse: collapse;
-        margin-top: 10px;
+        font-size: 12px;
     }
 
     .deductions-table th,
     .deductions-table td {
-        border: 1px solid #ccc;
-        padding: 8px;
-        text-align: left;
+        padding: 6px;
     }
-
-    .deductions-table th {
-        background: #f1f1f1;
-    }
-
-    .employee-actions {
-        display: grid;
-        grid-template-columns: 1fr 1fr;
-        gap: 10px;
-        margin-top: 15px;
-    }
-
-    .empty {
-        padding: 30px;
-        text-align: center;
-        background: #fff3cd;
-        border: 1px solid #ffeeba;
-        border-radius: 7px;
-        color: #856404;
-    }
-
-    @media(max-width: 600px) {
-        body {
-            padding: 8px;
-        }
-
-        .container {
-            padding: 12px;
-        }
-
-        .employee-actions {
-            grid-template-columns: 1fr;
-        }
-    }
+}
 </style>
 </head>
 
@@ -230,10 +273,23 @@
     <h1>All Employees Payslips</h1>
 
     <div class="notice">
-        <strong>Payroll data is automatically fetched.</strong><br>
-        Employee names, rates, hours, overtime, days worked, gross pay,
-        payment dates and other payment information come from the saved Payroll.
-        You only enter the employee information that belongs on the payslip.
+
+        <strong>Payroll data is automatically fetched.</strong><br><br>
+
+        Employee names, hourly rates, hours worked, days worked
+        and gross salary are automatically fetched from the saved
+        <strong>Payroll Calendar</strong>.
+
+        <br><br>
+
+        Employee payslip information such as Employee ID,
+        Job Title, Department, Pay Point, Tax Number,
+        Employment Code and Employment Date is entered below.
+
+        <br><br>
+
+        <strong>Tax Number is required for every employee.</strong>
+
     </div>
 
 
@@ -299,9 +355,7 @@
         Download All Payslips PDF
     </button>
 
-    <button
-        onclick="reloadPayslips()"
-    >
+    <button onclick="reloadPayslips()">
         Refresh Payroll Data
     </button>
 
@@ -313,57 +367,163 @@
 let payrollData = [];
 let deductions = [];
 let businessData = {};
+let savedPayroll = null;
 
 
-// --------------------------------------------------
-// LOAD DATA FROM LOCAL STORAGE
-// --------------------------------------------------
+// ==================================================
+// LOAD DATA FROM PAYROLL CALENDAR
+// ==================================================
 
 function loadData() {
 
-    payrollData =
-        JSON.parse(localStorage.getItem("payrollData") || "[]");
+    /*
+        Payroll Calendar saves:
+
+        localStorage["payrollCalendarData"]
+
+        {
+            startDate,
+            endDate,
+            employeeCount,
+            overtimeHoursPerUnit,
+            hrManagerName,
+            employees: [...]
+        }
+    */
+
+    savedPayroll =
+        JSON.parse(
+            localStorage.getItem(
+                "payrollCalendarData"
+            ) || "null"
+        );
+
+
+    if (
+        savedPayroll &&
+        Array.isArray(savedPayroll.employees)
+    ) {
+
+        payrollData =
+            savedPayroll.employees.map(employee => ({
+
+                name:
+                    employee.name || "Unnamed Employee",
+
+                rate:
+                    parseFloat(employee.rate) || 0,
+
+                hoursPerDay:
+                    parseFloat(employee.hoursPerDay) || 0,
+
+                totalPresent:
+                    parseInt(employee.totalPresent) || 0,
+
+                totalHoursWorked:
+                    parseFloat(
+                        employee.totalHoursWorked
+                    ) || 0,
+
+                totalPay:
+                    parseFloat(employee.totalPay) || 0,
+
+                dailyRecords:
+                    Array.isArray(employee.dailyRecords)
+                    ?
+                    employee.dailyRecords
+                    :
+                    [],
+
+                payslipDetails:
+                    employee.payslipDetails || {},
+
+                paymentDate:
+                    employee.paymentDate || "",
+
+                startDate:
+                    savedPayroll.startDate || "",
+
+                endDate:
+                    savedPayroll.endDate || "",
+
+                hrManagerName:
+                    savedPayroll.hrManagerName || ""
+
+            }));
+
+    } else {
+
+        payrollData = [];
+
+    }
+
+
+    // DEDUCTIONS
 
     deductions =
-        JSON.parse(localStorage.getItem("deductions") || "[]");
+        JSON.parse(
+            localStorage.getItem(
+                "deductions"
+            ) || "[]"
+        );
+
+
+    // BUSINESS INFORMATION
 
     businessData =
-        JSON.parse(localStorage.getItem("payrollBusiness") || "{}");
+        JSON.parse(
+            localStorage.getItem(
+                "payrollBusiness"
+            ) || "{}"
+        );
 
-
-    // BUSINESS DATA
 
     document.getElementById("businessName").value =
         businessData.name || "";
 
+
     document.getElementById("businessAddress").value =
         businessData.address || "";
+
 
     document.getElementById("businessContact").value =
         businessData.contact || "";
 
+
     document.getElementById("businessTaxNumber").value =
         businessData.taxNumber || "";
+
 
     document.getElementById("themeColor").value =
         businessData.themeColor || "#007BFF";
 
+
+    /*
+        If the business page has no payslip date,
+        use the Payroll Calendar end date.
+    */
+
     document.getElementById("payslipDate").value =
-        businessData.payslipDate || "";
+        businessData.payslipDate ||
+        savedPayroll?.endDate ||
+        "";
 
 
     renderEmployees();
 }
 
 
-// --------------------------------------------------
+// ==================================================
 // RENDER EMPLOYEES
-// --------------------------------------------------
+// ==================================================
 
 function renderEmployees() {
 
     const container =
-        document.getElementById("employeesContainer");
+        document.getElementById(
+            "employeesContainer"
+        );
+
 
     container.innerHTML = "";
 
@@ -371,11 +531,23 @@ function renderEmployees() {
     if (!payrollData.length) {
 
         container.innerHTML = `
+
             <div class="empty">
-                <strong>No payroll data found.</strong><br><br>
-                Go to the Payroll page, calculate the payroll,
-                save it, then return to this Payslip page.
+
+                <strong>
+                    No payroll data found.
+                </strong>
+
+                <br><br>
+
+                Go to the Payroll Calendar,
+                enter the employees,
+                calculate the payroll,
+                save the payroll,
+                then return to this Payslip page.
+
             </div>
+
         `;
 
         return;
@@ -387,39 +559,76 @@ function renderEmployees() {
         const card =
             document.createElement("div");
 
-        card.className = "employee-card";
+
+        card.className =
+            "employee-card";
+
 
         const totalHours =
             getTotalHours(employee);
 
+
         const overtimeHours =
             getOvertimeHours(employee);
+
 
         const basicPay =
             getBasicPay(employee);
 
+
         const overtimePay =
             getOvertimePay(employee);
+
+
+        /*
+            IMPORTANT:
+            Gross salary comes directly from
+            Payroll Calendar employee.totalPay.
+        */
 
         const grossPay =
             getGrossPay(employee);
 
+
         const employeeDeductions =
-            calculateDeductions(grossPay);
+            calculateDeductions(
+                grossPay
+            );
+
 
         const netPay =
-            grossPay - employeeDeductions.total;
+            grossPay -
+            employeeDeductions.total;
+
+
+        const details =
+            employee.payslipDetails || {};
+
+
+        const taxNumber =
+            details.taxNumber || "";
+
+
+        const taxClass =
+            taxNumber
+            ?
+            "tax-complete"
+            :
+            "tax-required";
 
 
         card.innerHTML = `
 
             <h3>
                 Employee ${index + 1}:
-                ${escapeHTML(employee.name || "Unnamed Employee")}
+                ${escapeHTML(
+                    employee.name ||
+                    "Unnamed Employee"
+                )}
             </h3>
 
 
-            <!-- PAYMENT DATA FROM PAYROLL -->
+            <!-- PAYMENT DATA -->
 
             <div class="payroll-box">
 
@@ -429,209 +638,440 @@ function renderEmployees() {
 
                 <div class="payroll-grid">
 
-                    <div class="pay-item">
-                        <span>Employee Name</span>
-                        <strong>
-                            ${escapeHTML(employee.name || "N/A")}
-                        </strong>
-                    </div>
 
                     <div class="pay-item">
-                        <span>Rate / Hour</span>
+
+                        <span>
+                            Employee Name
+                        </span>
+
+                        <strong>
+                            ${escapeHTML(
+                                employee.name ||
+                                "N/A"
+                            )}
+                        </strong>
+
+                    </div>
+
+
+                    <div class="pay-item">
+
+                        <span>
+                            Rate / Hour
+                        </span>
+
                         <strong>
                             ${money(employee.rate)}
                         </strong>
+
                     </div>
 
+
                     <div class="pay-item">
-                        <span>Days Worked</span>
+
+                        <span>
+                            Days Worked
+                        </span>
+
                         <strong>
                             ${employee.totalPresent || 0}
                         </strong>
+
                     </div>
 
+
                     <div class="pay-item">
-                        <span>Total Hours Worked</span>
+
+                        <span>
+                            Total Hours Worked
+                        </span>
+
                         <strong>
                             ${number(totalHours)}
                         </strong>
+
                     </div>
 
+
                     <div class="pay-item">
-                        <span>Total Overtime Hours</span>
+
+                        <span>
+                            Total Overtime Hours
+                        </span>
+
                         <strong>
                             ${number(overtimeHours)}
                         </strong>
+
                     </div>
 
+
                     <div class="pay-item">
-                        <span>Basic Pay</span>
+
+                        <span>
+                            Basic Pay
+                        </span>
+
                         <strong>
                             ${money(basicPay)}
                         </strong>
+
                     </div>
 
+
                     <div class="pay-item">
-                        <span>Overtime Pay</span>
+
+                        <span>
+                            Overtime Pay
+                        </span>
+
                         <strong>
                             ${money(overtimePay)}
                         </strong>
+
                     </div>
 
+
                     <div class="pay-item">
-                        <span>Gross Pay</span>
+
+                        <span>
+                            Gross Salary
+                        </span>
+
                         <strong>
                             ${money(grossPay)}
                         </strong>
+
                     </div>
 
+
                     <div class="pay-item">
-                        <span>Payment Date</span>
+
+                        <span>
+                            Payment Date
+                        </span>
+
                         <strong>
                             ${formatDate(
                                 employee.paymentDate ||
-                                businessData.payslipDate
+                                businessData.payslipDate ||
+                                savedPayroll?.endDate
                             )}
                         </strong>
+
                     </div>
+
 
                 </div>
 
             </div>
 
 
-            <!-- EMPLOYEE DETAILS ENTERED ON PAYSLIP -->
+            <!-- EMPLOYEE INFORMATION -->
 
-            <h4>Employee Information</h4>
+            <h4>
+                Employee Information
+            </h4>
+
 
             <div class="employee-grid">
 
+
+                <!-- EMPLOYEE ID -->
+
                 <div>
-                    <label>Employee ID</label>
+
+                    <label>
+                        Employee ID
+                        <span class="required">*</span>
+                    </label>
+
                     <input
                         type="text"
                         id="empId_${index}"
                         placeholder="EMP001"
+                        value="${escapeAttribute(
+                            details.employeeId || ""
+                        )}"
                     >
+
                 </div>
 
+
+                <!-- JOB TITLE -->
+
                 <div>
-                    <label>Job Title</label>
+
+                    <label>
+                        Job Title
+                        <span class="required">*</span>
+                    </label>
+
                     <input
                         type="text"
                         id="jobTitle_${index}"
                         placeholder="Job title"
+                        value="${escapeAttribute(
+                            details.jobTitle || ""
+                        )}"
                     >
+
                 </div>
 
+
+                <!-- DEPARTMENT -->
+
                 <div>
-                    <label>Department</label>
+
+                    <label>
+                        Department
+                        <span class="required">*</span>
+                    </label>
+
                     <input
                         type="text"
                         id="department_${index}"
                         placeholder="Department"
+                        value="${escapeAttribute(
+                            details.department || ""
+                        )}"
                     >
+
                 </div>
 
-                <div>
-                    <label>Pay Point</label>
 
-                    <select id="payPoint_${index}">
-                        <option value="Monthly">Monthly</option>
-                        <option value="Weekly">Weekly</option>
-                        <option value="Fortnightly">
+                <!-- PAY POINT -->
+
+                <div>
+
+                    <label>
+                        Pay Point
+                        <span class="required">*</span>
+                    </label>
+
+                    <select
+                        id="payPoint_${index}"
+                    >
+
+                        <option value="Monthly"
+                            ${details.payPoint === "Monthly" ? "selected" : ""}>
+                            Monthly
+                        </option>
+
+                        <option value="Weekly"
+                            ${details.payPoint === "Weekly" ? "selected" : ""}>
+                            Weekly
+                        </option>
+
+                        <option value="Fortnightly"
+                            ${details.payPoint === "Fortnightly" ? "selected" : ""}>
                             Fortnightly
                         </option>
+
                     </select>
+
                 </div>
 
+
+                <!-- TAX NUMBER -->
+
                 <div>
-                    <label>Tax Number</label>
+
+                    <label>
+                        Tax Number
+                        <span class="required">*</span>
+                    </label>
+
                     <input
                         type="text"
                         id="taxNumber_${index}"
-                        placeholder="Tax number"
+                        class="${taxClass}"
+                        placeholder="Enter employee tax number"
+                        value="${escapeAttribute(
+                            taxNumber
+                        )}"
+                        required
+                        oninput="updateTaxField(${index})"
                     >
+
                 </div>
 
+
+                <!-- EMPLOYMENT CODE -->
+
                 <div>
-                    <label>Employment Code</label>
+
+                    <label>
+                        Employment Code
+                        <span class="required">*</span>
+                    </label>
+
                     <input
                         type="text"
                         id="employmentCode_${index}"
                         placeholder="Employment code"
+                        value="${escapeAttribute(
+                            details.employmentCode || ""
+                        )}"
                     >
+
                 </div>
 
+
+                <!-- EMPLOYMENT DATE -->
+
                 <div>
-                    <label>Employment Date</label>
+
+                    <label>
+                        Employment Date
+                        <span class="required">*</span>
+                    </label>
+
                     <input
                         type="date"
                         id="dateEngaged_${index}"
+                        value="${escapeAttribute(
+                            details.dateEngaged || ""
+                        )}"
                     >
+
                 </div>
 
+
+                <!-- PAYMENT DATE -->
+
                 <div>
-                    <label>Payment Date</label>
+
+                    <label>
+                        Payment Date
+                        <span class="required">*</span>
+                    </label>
+
                     <input
                         type="date"
                         id="paymentDate_${index}"
-                        value="${employee.paymentDate || businessData.payslipDate || ""}"
+                        value="${escapeAttribute(
+                            details.paymentDate ||
+                            employee.paymentDate ||
+                            businessData.payslipDate ||
+                            savedPayroll?.endDate ||
+                            ""
+                        )}"
                     >
+
                 </div>
+
 
             </div>
 
 
+            ${
+                !taxNumber
+                ?
+                `
+                <div class="warning">
+
+                    <strong>
+                        Tax Number required:
+                    </strong>
+
+                    Please enter the tax number
+                    for this employee before
+                    downloading the payslip.
+
+                </div>
+                `
+                :
+                ""
+            }
+
+
             <!-- DEDUCTIONS -->
 
-            <h4>Deductions</h4>
+            <h4>
+                Deductions
+            </h4>
+
 
             <table class="deductions-table">
 
                 <thead>
+
                     <tr>
-                        <th>Deduction</th>
-                        <th>Type</th>
-                        <th>Rate / Amount</th>
-                        <th>Amount Deducted</th>
+
+                        <th>
+                            Deduction
+                        </th>
+
+                        <th>
+                            Type
+                        </th>
+
+                        <th>
+                            Rate / Amount
+                        </th>
+
+                        <th>
+                            Amount Deducted
+                        </th>
+
                     </tr>
+
                 </thead>
+
 
                 <tbody>
 
                     ${
                         employeeDeductions.details.length
                         ?
-                        employeeDeductions.details.map(d => `
-                            <tr>
-                                <td>
-                                    ${escapeHTML(d.name)}
-                                </td>
 
-                                <td>
-                                    ${d.type === "percent" ? "%" : "Flat"}
-                                </td>
+                        employeeDeductions.details
+                            .map(d => `
 
-                                <td>
-                                    ${
-                                        d.type === "percent"
-                                        ? d.value + "%"
-                                        : money(d.value)
-                                    }
-                                </td>
+                                <tr>
 
-                                <td>
-                                    ${money(d.amount)}
-                                </td>
-                            </tr>
-                        `).join("")
+                                    <td>
+                                        ${escapeHTML(d.name)}
+                                    </td>
+
+                                    <td>
+                                        ${
+                                            d.type === "percent"
+                                            ? "%"
+                                            : "Flat"
+                                        }
+                                    </td>
+
+                                    <td>
+                                        ${
+                                            d.type === "percent"
+                                            ?
+                                            d.value + "%"
+                                            :
+                                            money(d.value)
+                                        }
+                                    </td>
+
+                                    <td>
+                                        ${money(d.amount)}
+                                    </td>
+
+                                </tr>
+
+                            `)
+                            .join("")
+
                         :
+
                         `
                         <tr>
+
                             <td colspan="4">
                                 No deductions saved.
                             </td>
+
                         </tr>
                         `
                     }
@@ -647,22 +1087,29 @@ function renderEmployees() {
 
                 <div>
                     Gross Pay:
-                    <strong>${money(grossPay)}</strong>
+                    <strong>
+                        ${money(grossPay)}
+                    </strong>
                 </div>
 
                 <div>
                     Total Deductions:
-                    <strong>${money(employeeDeductions.total)}</strong>
+                    <strong>
+                        ${money(
+                            employeeDeductions.total
+                        )}
+                    </strong>
                 </div>
 
                 <div class="amount">
-                    NET PAY: ${money(netPay)}
+                    NET PAY:
+                    ${money(netPay)}
                 </div>
 
             </div>
 
 
-            <!-- BUTTON -->
+            <!-- BUTTONS -->
 
             <div class="employee-actions">
 
@@ -680,16 +1127,61 @@ function renderEmployees() {
                 </button>
 
             </div>
+
         `;
 
+
         container.appendChild(card);
+
     });
+
 }
 
 
-// --------------------------------------------------
+// ==================================================
+// TAX FIELD VISUAL UPDATE
+// ==================================================
+
+function updateTaxField(index) {
+
+    const field =
+        document.getElementById(
+            `taxNumber_${index}`
+        );
+
+
+    if (!field) {
+        return;
+    }
+
+
+    if (field.value.trim()) {
+
+        field.classList.remove(
+            "tax-required"
+        );
+
+        field.classList.add(
+            "tax-complete"
+        );
+
+    } else {
+
+        field.classList.remove(
+            "tax-complete"
+        );
+
+        field.classList.add(
+            "tax-required"
+        );
+    }
+
+}
+
+
+// ==================================================
 // PAYMENT CALCULATIONS
-// --------------------------------------------------
+// ==================================================
 
 function getTotalHours(employee) {
 
@@ -697,32 +1189,61 @@ function getTotalHours(employee) {
         employee.totalHoursWorked !== undefined &&
         employee.totalHoursWorked !== null
     ) {
-        return parseFloat(employee.totalHoursWorked) || 0;
+
+        return (
+            parseFloat(
+                employee.totalHoursWorked
+            ) || 0
+        );
+
     }
 
-    if (!employee.dailyRecords) {
+
+    if (
+        !Array.isArray(
+            employee.dailyRecords
+        )
+    ) {
+
         return 0;
+
     }
+
 
     return employee.dailyRecords.reduce(
         (total, record) => {
 
-            if (record.attendance === "P") {
+            if (
+                record.attendance === "P"
+            ) {
 
                 const hours =
                     Math.max(
                         0,
-                        (parseFloat(employee.hoursPerDay) || 0) -
-                        (parseFloat(record.lateHours) || 0)
+                        (
+                            parseFloat(
+                                employee.hoursPerDay
+                            ) || 0
+                        ) -
+                        (
+                            parseFloat(
+                                record.lateHours
+                            ) || 0
+                        )
                     );
 
+
                 return total + hours;
+
             }
 
+
             return total;
+
         },
         0
     );
+
 }
 
 
@@ -732,25 +1253,50 @@ function getOvertimeHours(employee) {
         employee.totalOvertimeHours !== undefined &&
         employee.totalOvertimeHours !== null
     ) {
-        return parseFloat(employee.totalOvertimeHours) || 0;
+
+        return (
+            parseFloat(
+                employee.totalOvertimeHours
+            ) || 0
+        );
+
     }
 
-    if (!employee.dailyRecords) {
+
+    if (
+        !Array.isArray(
+            employee.dailyRecords
+        )
+    ) {
+
         return 0;
+
     }
+
 
     return employee.dailyRecords.reduce(
         (total, record) => {
 
-            if (record.attendance === "P") {
+            if (
+                record.attendance === "P"
+            ) {
+
                 return total +
-                    (parseFloat(record.overtimeHours) || 0);
+                    (
+                        parseFloat(
+                            record.overtimeHours
+                        ) || 0
+                    );
+
             }
 
+
             return total;
+
         },
         0
     );
+
 }
 
 
@@ -760,13 +1306,25 @@ function getBasicPay(employee) {
         employee.totalBasicPay !== undefined &&
         employee.totalBasicPay !== null
     ) {
-        return parseFloat(employee.totalBasicPay) || 0;
+
+        return (
+            parseFloat(
+                employee.totalBasicPay
+            ) || 0
+        );
+
     }
 
+
     return (
-        (parseFloat(employee.rate) || 0) *
+        (
+            parseFloat(
+                employee.rate
+            ) || 0
+        ) *
         getTotalHours(employee)
     );
+
 }
 
 
@@ -776,179 +1334,299 @@ function getOvertimePay(employee) {
         employee.totalOvertimePay !== undefined &&
         employee.totalOvertimePay !== null
     ) {
-        return parseFloat(employee.totalOvertimePay) || 0;
+
+        return (
+            parseFloat(
+                employee.totalOvertimePay
+            ) || 0
+        );
+
     }
 
 
-    if (!employee.dailyRecords) {
+    if (
+        !Array.isArray(
+            employee.dailyRecords
+        )
+    ) {
+
         return 0;
+
     }
 
+
+    /*
+        Get the overtime unit from
+        Payroll Calendar itself.
+    */
 
     const overtimeUnit =
         parseFloat(
-            localStorage.getItem("overtimeHoursPerUnit")
+            savedPayroll?.overtimeHoursPerUnit
         ) || 1;
 
 
     return employee.dailyRecords.reduce(
         (total, record) => {
 
-            if (record.attendance !== "P") {
+            if (
+                record.attendance !== "P"
+            ) {
+
                 return total;
+
             }
 
+
             const overtimeHours =
-                parseFloat(record.overtimeHours) || 0;
+                parseFloat(
+                    record.overtimeHours
+                ) || 0;
+
 
             const overtimePercent =
-                parseFloat(record.overtimePercent) || 0;
+                parseFloat(
+                    record.overtimePercent
+                ) || 0;
+
 
             const rate =
-                parseFloat(employee.rate) || 0;
+                parseFloat(
+                    employee.rate
+                ) || 0;
+
 
             const overtimeRate =
-                rate * (1 + overtimePercent / 100);
+                rate *
+                (
+                    1 +
+                    overtimePercent / 100
+                );
+
 
             return total +
-                ((overtimeHours / overtimeUnit) *
-                overtimeRate);
+                (
+                    (
+                        overtimeHours /
+                        overtimeUnit
+                    ) *
+                    overtimeRate
+                );
 
         },
         0
     );
+
 }
 
 
+// ==================================================
+// GROSS PAY
+// ==================================================
+
 function getGrossPay(employee) {
+
+    /*
+        IMPORTANT:
+
+        Payroll Calendar already calculates
+        employee.totalPay.
+
+        That value is used as the official
+        gross salary.
+    */
 
     if (
         employee.totalPay !== undefined &&
         employee.totalPay !== null
     ) {
-        return parseFloat(employee.totalPay) || 0;
+
+        return (
+            parseFloat(
+                employee.totalPay
+            ) || 0
+        );
+
     }
 
-    return getBasicPay(employee) + getOvertimePay(employee);
+
+    return (
+        getBasicPay(employee) +
+        getOvertimePay(employee)
+    );
+
 }
 
 
-// --------------------------------------------------
+// ==================================================
 // DEDUCTIONS
-// --------------------------------------------------
+// ==================================================
 
 function calculateDeductions(grossPay) {
 
     let total = 0;
+
     const details = [];
 
 
-    deductions.forEach(deduction => {
+    deductions.forEach(
+        deduction => {
 
-        const value =
-            parseFloat(deduction.value) || 0;
+            const value =
+                parseFloat(
+                    deduction.value
+                ) || 0;
 
-        let amount = 0;
+
+            let amount = 0;
 
 
-        if (deduction.type === "percent") {
+            if (
+                deduction.type ===
+                "percent"
+            ) {
 
-            amount =
-                grossPay * (value / 100);
+                amount =
+                    grossPay *
+                    (
+                        value / 100
+                    );
 
-        } else {
+            } else {
 
-            amount = value;
+                amount = value;
+
+            }
+
+
+            total += amount;
+
+
+            details.push({
+
+                name:
+                    deduction.name ||
+                    "Deduction",
+
+                type:
+                    deduction.type,
+
+                value:
+                    value,
+
+                amount:
+                    amount
+
+            });
+
         }
-
-
-        total += amount;
-
-
-        details.push({
-            name: deduction.name,
-            type: deduction.type,
-            value: value,
-            amount: amount
-        });
-    });
+    );
 
 
     return {
-        total: total,
-        details: details
+
+        total:
+            total,
+
+        details:
+            details
+
     };
+
 }
 
 
-// --------------------------------------------------
-// SAVE ENTERED EMPLOYEE DETAILS
-// --------------------------------------------------
+// ==================================================
+// SAVE EMPLOYEE DETAILS
+// ==================================================
 
 function saveEmployeeDetails() {
 
-    payrollData.forEach((employee, index) => {
+    payrollData.forEach(
+        (employee, index) => {
 
-        employee.payslipDetails = {
+            employee.payslipDetails = {
 
-            employeeId:
-                document.getElementById(
-                    `empId_${index}`
-                )?.value || "",
+                employeeId:
+                    document.getElementById(
+                        `empId_${index}`
+                    )?.value.trim() || "",
 
-            jobTitle:
-                document.getElementById(
-                    `jobTitle_${index}`
-                )?.value || "",
 
-            department:
-                document.getElementById(
-                    `department_${index}`
-                )?.value || "",
+                jobTitle:
+                    document.getElementById(
+                        `jobTitle_${index}`
+                    )?.value.trim() || "",
 
-            payPoint:
-                document.getElementById(
-                    `payPoint_${index}`
-                )?.value || "Monthly",
 
-            taxNumber:
-                document.getElementById(
-                    `taxNumber_${index}`
-                )?.value || "",
+                department:
+                    document.getElementById(
+                        `department_${index}`
+                    )?.value.trim() || "",
 
-            employmentCode:
-                document.getElementById(
-                    `employmentCode_${index}`
-                )?.value || "",
 
-            dateEngaged:
-                document.getElementById(
-                    `dateEngaged_${index}`
-                )?.value || "",
+                payPoint:
+                    document.getElementById(
+                        `payPoint_${index}`
+                    )?.value ||
+                    "Monthly",
 
-            paymentDate:
-                document.getElementById(
-                    `paymentDate_${index}`
-                )?.value ||
-                employee.paymentDate ||
-                businessData.payslipDate ||
-                ""
-        };
-    });
+
+                taxNumber:
+                    document.getElementById(
+                        `taxNumber_${index}`
+                    )?.value.trim() || "",
+
+
+                employmentCode:
+                    document.getElementById(
+                        `employmentCode_${index}`
+                    )?.value.trim() || "",
+
+
+                dateEngaged:
+                    document.getElementById(
+                        `dateEngaged_${index}`
+                    )?.value || "",
+
+
+                paymentDate:
+                    document.getElementById(
+                        `paymentDate_${index}`
+                    )?.value ||
+                    employee.paymentDate ||
+                    businessData.payslipDate ||
+                    savedPayroll?.endDate ||
+                    ""
+
+            };
+
+        }
+    );
 
 
     localStorage.setItem(
         "payslipEmployeeDetails",
         JSON.stringify(
-            payrollData.map(e => e.payslipDetails || {})
+            payrollData.map(
+                employee =>
+                    employee.payslipDetails || {}
+            )
         )
     );
+
+
+    /*
+        Also keep the payslip details
+        in the current page memory.
+    */
+
 }
 
 
-// --------------------------------------------------
-// LOAD SAVED ENTERED DETAILS
-// --------------------------------------------------
+// ==================================================
+// LOAD EMPLOYEE DETAILS
+// ==================================================
 
 function loadEmployeeDetails() {
 
@@ -960,126 +1638,257 @@ function loadEmployeeDetails() {
         );
 
 
-    saved.forEach((details, index) => {
+    saved.forEach(
+        (details, index) => {
 
-        if (!details) return;
-
-
-        const setValue = (id, value) => {
-
-            const element =
-                document.getElementById(id);
-
-            if (element && value !== undefined) {
-                element.value = value;
+            if (!details) {
+                return;
             }
-        };
 
 
-        setValue(
-            `empId_${index}`,
-            details.employeeId
-        );
+            const setValue =
+                (id, value) => {
 
-        setValue(
-            `jobTitle_${index}`,
-            details.jobTitle
-        );
+                    const element =
+                        document.getElementById(id);
 
-        setValue(
-            `department_${index}`,
-            details.department
-        );
 
-        setValue(
-            `payPoint_${index}`,
-            details.payPoint || "Monthly"
-        );
+                    if (
+                        element &&
+                        value !== undefined &&
+                        value !== null
+                    ) {
 
-        setValue(
-            `taxNumber_${index}`,
-            details.taxNumber
-        );
+                        element.value =
+                            value;
 
-        setValue(
-            `employmentCode_${index}`,
-            details.employmentCode
-        );
+                    }
 
-        setValue(
-            `dateEngaged_${index}`,
-            details.dateEngaged
-        );
+                };
 
-        setValue(
-            `paymentDate_${index}`,
-            details.paymentDate
-        );
-    });
+
+            setValue(
+                `empId_${index}`,
+                details.employeeId
+            );
+
+
+            setValue(
+                `jobTitle_${index}`,
+                details.jobTitle
+            );
+
+
+            setValue(
+                `department_${index}`,
+                details.department
+            );
+
+
+            setValue(
+                `payPoint_${index}`,
+                details.payPoint ||
+                "Monthly"
+            );
+
+
+            setValue(
+                `taxNumber_${index}`,
+                details.taxNumber
+            );
+
+
+            setValue(
+                `employmentCode_${index}`,
+                details.employmentCode
+            );
+
+
+            setValue(
+                `dateEngaged_${index}`,
+                details.dateEngaged
+            );
+
+
+            setValue(
+                `paymentDate_${index}`,
+                details.paymentDate
+            );
+
+
+            updateTaxField(index);
+
+        }
+    );
+
 }
 
 
-// --------------------------------------------------
-// PDF
-// --------------------------------------------------
+// ==================================================
+// CHECK REQUIRED EMPLOYEE FIELDS
+// ==================================================
+
+function validateEmployeeDetails() {
+
+    saveEmployeeDetails();
+
+
+    const missing = [];
+
+
+    payrollData.forEach(
+        (employee, index) => {
+
+            const details =
+                employee.payslipDetails || {};
+
+
+            if (
+                !details.taxNumber ||
+                !details.taxNumber.trim()
+            ) {
+
+                missing.push(
+                    employee.name ||
+                    `Employee ${index + 1}`
+                );
+
+            }
+
+        }
+    );
+
+
+    if (missing.length) {
+
+        alert(
+            "Every employee must have a Tax Number.\n\n" +
+            "Missing Tax Number:\n\n" +
+            missing.join("\n")
+        );
+
+
+        return false;
+
+    }
+
+
+    return true;
+
+}
+
+
+// ==================================================
+// PDF LIBRARY
+// ==================================================
 
 async function ensureJsPDF() {
 
-    return new Promise(resolve => {
+    return new Promise(
+        resolve => {
 
-        if (
-            window.jspdf &&
-            window.jspdf.jsPDF
-        ) {
-            resolve();
-            return;
+            if (
+                window.jspdf &&
+                window.jspdf.jsPDF
+            ) {
+
+                resolve();
+
+                return;
+
+            }
+
+
+            setTimeout(
+                () =>
+                    ensureJsPDF()
+                        .then(resolve),
+                100
+            );
+
         }
+    );
 
-
-        setTimeout(
-            () => ensureJsPDF().then(resolve),
-            100
-        );
-    });
 }
 
+
+// ==================================================
+// RGB
+// ==================================================
 
 function hexToRgb(hex) {
 
     const result =
-        /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
+        /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i
+            .exec(hex);
 
 
     if (!result) {
+
         return {
+
             r: 0,
             g: 123,
             b: 255
+
         };
+
     }
 
 
     return {
-        r: parseInt(result[1], 16),
-        g: parseInt(result[2], 16),
-        b: parseInt(result[3], 16)
+
+        r:
+            parseInt(
+                result[1],
+                16
+            ),
+
+        g:
+            parseInt(
+                result[2],
+                16
+            ),
+
+        b:
+            parseInt(
+                result[3],
+                16
+            )
+
     };
+
 }
 
+
+// ==================================================
+// DOWNLOAD SINGLE PAYSLIP
+// ==================================================
 
 async function downloadEmployeePayslip(index) {
 
     await ensureJsPDF();
 
-    saveEmployeeDetails();
+
+    if (!validateEmployeeDetails()) {
+
+        return;
+
+    }
+
 
     const employee =
         payrollData[index];
 
 
     if (!employee) {
-        alert("Employee payroll data could not be found.");
+
+        alert(
+            "Employee payroll data could not be found."
+        );
+
         return;
+
     }
 
 
@@ -1090,30 +1899,40 @@ async function downloadEmployeePayslip(index) {
     const grossPay =
         getGrossPay(employee);
 
+
     const basicPay =
         getBasicPay(employee);
+
 
     const overtimePay =
         getOvertimePay(employee);
 
+
     const totalHours =
         getTotalHours(employee);
 
+
     const overtimeHours =
         getOvertimeHours(employee);
+
 
     const workedDays =
         employee.totalPresent || 0;
 
 
     const deductionData =
-        calculateDeductions(grossPay);
+        calculateDeductions(
+            grossPay
+        );
+
 
     const totalDeductions =
         deductionData.total;
 
+
     const netPay =
-        grossPay - totalDeductions;
+        grossPay -
+        totalDeductions;
 
 
     const { jsPDF } =
@@ -1132,7 +1951,8 @@ async function downloadEmployeePayslip(index) {
         hexToRgb(
             document.getElementById(
                 "themeColor"
-            ).value || "#007BFF"
+            ).value ||
+            "#007BFF"
         );
 
 
@@ -1143,6 +1963,7 @@ async function downloadEmployeePayslip(index) {
         theme.g,
         theme.b
     );
+
 
     doc.rect(
         0,
@@ -1189,7 +2010,8 @@ async function downloadEmployeePayslip(index) {
     doc.text(
         document.getElementById(
             "businessName"
-        ).value || "Company Name",
+        ).value ||
+        "Company Name",
         10,
         12
     );
@@ -1236,10 +2058,12 @@ async function downloadEmployeePayslip(index) {
     if (businessTax) {
 
         doc.text(
-            "Tax No: " + businessTax,
+            "Tax No: " +
+            businessTax,
             10,
             36
         );
+
     }
 
 
@@ -1250,6 +2074,7 @@ async function downloadEmployeePayslip(index) {
         245,
         245
     );
+
 
     doc.rect(
         140,
@@ -1354,28 +2179,43 @@ async function downloadEmployeePayslip(index) {
 
     doc.text(
         "Employee Name: " +
-        (employee.name || "N/A"),
+        (
+            employee.name ||
+            "N/A"
+        ),
         10,
         y
     );
 
+
     doc.text(
         "Employee ID: " +
-        (details.employeeId || "N/A"),
+        (
+            details.employeeId ||
+            "N/A"
+        ),
         10,
         y + 5
     );
 
+
     doc.text(
         "Job Title: " +
-        (details.jobTitle || "N/A"),
+        (
+            details.jobTitle ||
+            "N/A"
+        ),
         10,
         y + 10
     );
 
+
     doc.text(
         "Department: " +
-        (details.department || "N/A"),
+        (
+            details.department ||
+            "N/A"
+        ),
         10,
         y + 15
     );
@@ -1383,28 +2223,43 @@ async function downloadEmployeePayslip(index) {
 
     doc.text(
         "Pay Point: " +
-        (details.payPoint || "Monthly"),
+        (
+            details.payPoint ||
+            "Monthly"
+        ),
         110,
         y
     );
 
+
     doc.text(
         "Tax Number: " +
-        (details.taxNumber || "N/A"),
+        (
+            details.taxNumber ||
+            "N/A"
+        ),
         110,
         y + 5
     );
 
+
     doc.text(
         "Employment Code: " +
-        (details.employmentCode || "N/A"),
+        (
+            details.employmentCode ||
+            "N/A"
+        ),
         110,
         y + 10
     );
 
+
     doc.text(
         "Employment Date: " +
-        (details.dateEngaged || "N/A"),
+        (
+            details.dateEngaged ||
+            "N/A"
+        ),
         110,
         y + 15
     );
@@ -1419,6 +2274,7 @@ async function downloadEmployeePayslip(index) {
         undefined,
         "bold"
     );
+
 
     doc.text(
         "PAYMENT INFORMATION",
@@ -1436,32 +2292,41 @@ async function downloadEmployeePayslip(index) {
     );
 
 
+    const paymentDate =
+        details.paymentDate ||
+        employee.paymentDate ||
+        businessData.payslipDate ||
+        savedPayroll?.endDate ||
+        "";
+
+
     doc.text(
         "Payment Date: " +
-        formatDate(
-            details.paymentDate ||
-            employee.paymentDate ||
-            businessData.payslipDate
-        ),
+        formatDate(paymentDate),
         10,
         y
     );
 
 
-    const firstDate =
-        employee.dailyRecords?.[0]?.date || "";
+    const periodStart =
+        savedPayroll?.startDate ||
+        employee.dailyRecords?.[0]?.date ||
+        "";
 
-    const lastDate =
+
+    const periodEnd =
+        savedPayroll?.endDate ||
         employee.dailyRecords?.[
             employee.dailyRecords.length - 1
-        ]?.date || "";
+        ]?.date ||
+        "";
 
 
     doc.text(
         "Pay Period: " +
-        formatDate(firstDate) +
+        formatDate(periodStart) +
         " to " +
-        formatDate(lastDate),
+        formatDate(periodEnd),
         90,
         y
     );
@@ -1470,7 +2335,7 @@ async function downloadEmployeePayslip(index) {
     y += 10;
 
 
-    // EARNINGS TABLE
+    // EARNINGS
 
     doc.autoTable({
 
@@ -1530,21 +2395,29 @@ async function downloadEmployeePayslip(index) {
         theme: "grid",
 
         headStyles: {
+
             fillColor: [
                 theme.r,
                 theme.g,
                 theme.b
             ],
+
             textColor: 255,
+
             fontStyle: "bold"
+
         },
 
         styles: {
+
             fontSize: 8,
+
             cellPadding: 3
+
         },
 
         columnStyles: {
+
             0: {
                 cellWidth: 55
             },
@@ -1553,7 +2426,9 @@ async function downloadEmployeePayslip(index) {
                 cellWidth: 35,
                 halign: "right"
             }
+
         }
+
     });
 
 
@@ -1561,7 +2436,7 @@ async function downloadEmployeePayslip(index) {
         doc.lastAutoTable.finalY;
 
 
-    // DEDUCTIONS TABLE
+    // DEDUCTIONS
 
     doc.autoTable({
 
@@ -1583,18 +2458,25 @@ async function downloadEmployeePayslip(index) {
 
             deductionData.details.length
             ?
-            deductionData.details.map(
-                d => [
-                    d.name,
-                    money(d.amount)
-                ]
-            ).concat([
-                [
-                    "TOTAL DEDUCTIONS",
-                    money(totalDeductions)
-                ]
-            ])
+
+            deductionData.details
+                .map(
+                    d => [
+                        d.name,
+                        money(d.amount)
+                    ]
+                )
+                .concat([
+                    [
+                        "TOTAL DEDUCTIONS",
+                        money(
+                            totalDeductions
+                        )
+                    ]
+                ])
+
             :
+
             [
                 [
                     "No deductions",
@@ -1605,21 +2487,29 @@ async function downloadEmployeePayslip(index) {
         theme: "grid",
 
         headStyles: {
+
             fillColor: [
                 220,
                 53,
                 69
             ],
+
             textColor: 255,
+
             fontStyle: "bold"
+
         },
 
         styles: {
+
             fontSize: 8,
+
             cellPadding: 3
+
         },
 
         columnStyles: {
+
             0: {
                 cellWidth: 55
             },
@@ -1628,7 +2518,9 @@ async function downloadEmployeePayslip(index) {
                 cellWidth: 35,
                 halign: "right"
             }
+
         }
+
     });
 
 
@@ -1688,6 +2580,7 @@ async function downloadEmployeePayslip(index) {
         undefined,
         "bold"
     );
+
 
     doc.setFontSize(10);
 
@@ -1753,6 +2646,7 @@ async function downloadEmployeePayslip(index) {
         y
     );
 
+
     doc.line(
         120,
         y,
@@ -1766,6 +2660,7 @@ async function downloadEmployeePayslip(index) {
         10,
         y + 5
     );
+
 
     doc.text(
         "Employee Signature",
@@ -1784,6 +2679,7 @@ async function downloadEmployeePayslip(index) {
         y
     );
 
+
     doc.line(
         120,
         y,
@@ -1797,6 +2693,7 @@ async function downloadEmployeePayslip(index) {
         10,
         y + 5
     );
+
 
     doc.text(
         "Date",
@@ -1842,16 +2739,18 @@ async function downloadEmployeePayslip(index) {
     doc.save(
         `Payslip_${safeName}.pdf`
     );
+
 }
 
 
-// --------------------------------------------------
-// DOWNLOAD ALL
-// --------------------------------------------------
+// ==================================================
+// DOWNLOAD ALL PAYSLIPS
+// ==================================================
 
 async function downloadAllPayslips() {
 
     await ensureJsPDF();
+
 
     if (!payrollData.length) {
 
@@ -1860,6 +2759,19 @@ async function downloadAllPayslips() {
         );
 
         return;
+
+    }
+
+
+    /*
+        Tax number is required
+        for EVERY employee.
+    */
+
+    if (!validateEmployeeDetails()) {
+
+        return;
+
     }
 
 
@@ -1872,21 +2784,21 @@ async function downloadAllPayslips() {
         i++
     ) {
 
-        await createCombinedPDF(
-            i
-        );
+        await createCombinedPDF(i);
+
     }
 
 
     alert(
         "All employee payslips have been downloaded."
     );
+
 }
 
 
-// --------------------------------------------------
-// ALL PDF CREATION
-// --------------------------------------------------
+// ==================================================
+// CREATE PDF
+// ==================================================
 
 async function createCombinedPDF(index) {
 
@@ -1901,20 +2813,28 @@ async function createCombinedPDF(index) {
     const grossPay =
         getGrossPay(employee);
 
+
     const basicPay =
         getBasicPay(employee);
+
 
     const overtimePay =
         getOvertimePay(employee);
 
+
     const totalHours =
         getTotalHours(employee);
+
 
     const overtimeHours =
         getOvertimeHours(employee);
 
+
     const deductionData =
-        calculateDeductions(grossPay);
+        calculateDeductions(
+            grossPay
+        );
+
 
     const netPay =
         grossPay -
@@ -1937,17 +2857,19 @@ async function createCombinedPDF(index) {
         hexToRgb(
             document.getElementById(
                 "themeColor"
-            ).value || "#007BFF"
+            ).value ||
+            "#007BFF"
         );
 
 
-    // Header
+    // HEADER
 
     doc.setFillColor(
         theme.r,
         theme.g,
         theme.b
     );
+
 
     doc.rect(
         0,
@@ -1994,16 +2916,28 @@ async function createCombinedPDF(index) {
     doc.text(
         document.getElementById(
             "businessName"
-        ).value || "Company Name",
+        ).value ||
+        "Company Name",
         10,
         12
     );
 
 
-    doc.text(
+    const address =
         document.getElementById(
             "businessAddress"
-        ).value || "",
+        ).value || "";
+
+
+    const addressLines =
+        doc.splitTextToSize(
+            address,
+            75
+        );
+
+
+    doc.text(
+        addressLines,
         10,
         18
     );
@@ -2017,11 +2951,29 @@ async function createCombinedPDF(index) {
             ).value || ""
         ),
         10,
-        25
+        30
     );
 
 
-    // Net
+    const businessTax =
+        document.getElementById(
+            "businessTaxNumber"
+        ).value || "";
+
+
+    if (businessTax) {
+
+        doc.text(
+            "Tax No: " +
+            businessTax,
+            10,
+            36
+        );
+
+    }
+
+
+    // NET PAY BOX
 
     doc.setFillColor(
         245,
@@ -2093,7 +3045,7 @@ async function createCombinedPDF(index) {
     );
 
 
-    // Employee
+    // EMPLOYEE INFORMATION
 
     let y = 53;
 
@@ -2132,50 +3084,72 @@ async function createCombinedPDF(index) {
 
 
     doc.text(
-        `Employee Name: ${employee.name || "N/A"}`,
+        `Employee Name: ${
+            employee.name || "N/A"
+        }`,
         10,
         y
     );
 
+
     doc.text(
-        `Employee ID: ${details.employeeId || "N/A"}`,
+        `Employee ID: ${
+            details.employeeId || "N/A"
+        }`,
         10,
         y + 5
     );
 
+
     doc.text(
-        `Job Title: ${details.jobTitle || "N/A"}`,
+        `Job Title: ${
+            details.jobTitle || "N/A"
+        }`,
         10,
         y + 10
     );
 
+
     doc.text(
-        `Department: ${details.department || "N/A"}`,
+        `Department: ${
+            details.department || "N/A"
+        }`,
         10,
         y + 15
     );
 
 
     doc.text(
-        `Pay Point: ${details.payPoint || "Monthly"}`,
+        `Pay Point: ${
+            details.payPoint || "Monthly"
+        }`,
         110,
         y
     );
 
+
     doc.text(
-        `Tax Number: ${details.taxNumber || "N/A"}`,
+        `Tax Number: ${
+            details.taxNumber || "N/A"
+        }`,
         110,
         y + 5
     );
 
+
     doc.text(
-        `Employment Code: ${details.employmentCode || "N/A"}`,
+        `Employment Code: ${
+            details.employmentCode || "N/A"
+        }`,
         110,
         y + 10
     );
 
+
     doc.text(
-        `Employment Date: ${details.dateEngaged || "N/A"}`,
+        `Employment Date: ${
+            details.dateEngaged || "N/A"
+        }`,
         110,
         y + 15
     );
@@ -2211,13 +3185,37 @@ async function createCombinedPDF(index) {
             formatDate(
                 details.paymentDate ||
                 employee.paymentDate ||
-                businessData.payslipDate
+                businessData.payslipDate ||
+                savedPayroll?.endDate
             )
         }`,
         10,
         y
     );
 
+
+    doc.text(
+        `Pay Period: ${
+            formatDate(
+                savedPayroll?.startDate ||
+                employee.dailyRecords?.[0]?.date ||
+                ""
+            )
+        } to ${
+            formatDate(
+                savedPayroll?.endDate ||
+                employee.dailyRecords?.[
+                    employee.dailyRecords.length - 1
+                ]?.date ||
+                ""
+            )
+        }`,
+        90,
+        y
+    );
+
+
+    // TABLES
 
     doc.autoTable({
 
@@ -2236,50 +3234,64 @@ async function createCombinedPDF(index) {
         ],
 
         body: [
+
             [
                 "Rate",
                 money(employee.rate)
             ],
+
             [
                 "Days Worked",
                 employee.totalPresent || 0
             ],
+
             [
                 "Total Hours",
                 number(totalHours)
             ],
+
             [
                 "Basic Pay",
                 money(basicPay)
             ],
+
             [
                 "Overtime Hours",
                 number(overtimeHours)
             ],
+
             [
                 "Overtime Pay",
                 money(overtimePay)
             ],
+
             [
                 "GROSS PAY",
                 money(grossPay)
             ]
+
         ],
 
         theme: "grid",
 
         headStyles: {
+
             fillColor: [
                 theme.r,
                 theme.g,
                 theme.b
             ],
-            textColor: 255
+
+            textColor: 255,
+
+            fontStyle: "bold"
+
         },
 
         styles: {
             fontSize: 8
         }
+
     });
 
 
@@ -2307,11 +3319,14 @@ async function createCombinedPDF(index) {
 
             deductionData.details.length
             ?
+
             deductionData.details
-                .map(d => [
-                    d.name,
-                    money(d.amount)
-                ])
+                .map(
+                    d => [
+                        d.name,
+                        money(d.amount)
+                    ]
+                )
                 .concat([
                     [
                         "TOTAL DEDUCTIONS",
@@ -2320,7 +3335,9 @@ async function createCombinedPDF(index) {
                         )
                     ]
                 ])
+
             :
+
             [
                 [
                     "No deductions",
@@ -2331,17 +3348,21 @@ async function createCombinedPDF(index) {
         theme: "grid",
 
         headStyles: {
+
             fillColor: [
                 220,
                 53,
                 69
             ],
+
             textColor: 255
+
         },
 
         styles: {
             fontSize: 8
         }
+
     });
 
 
@@ -2404,14 +3425,20 @@ async function createCombinedPDF(index) {
 
 
     doc.text(
-        `GROSS PAY: ${money(grossPay)}`,
+        `GROSS PAY: ${
+            money(grossPay)
+        }`,
         20,
         y + 9
     );
 
 
     doc.text(
-        `DEDUCTIONS: ${money(deductionData.total)}`,
+        `DEDUCTIONS: ${
+            money(
+                deductionData.total
+            )
+        }`,
         20,
         y + 18
     );
@@ -2428,7 +3455,9 @@ async function createCombinedPDF(index) {
 
 
     doc.text(
-        `NET PAY: ${money(netPay)}`,
+        `NET PAY: ${
+            money(netPay)
+        }`,
         140,
         y + 14
     );
@@ -2456,6 +3485,7 @@ async function createCombinedPDF(index) {
         y
     );
 
+
     doc.line(
         120,
         y,
@@ -2469,6 +3499,7 @@ async function createCombinedPDF(index) {
         10,
         y + 5
     );
+
 
     doc.text(
         "Employee Signature",
@@ -2510,65 +3541,92 @@ async function createCombinedPDF(index) {
     doc.save(
         `Payslip_${safeName}.pdf`
     );
+
 }
 
 
-// --------------------------------------------------
-// CLEAR ENTERED DETAILS
-// --------------------------------------------------
+// ==================================================
+// CLEAR EMPLOYEE DETAILS
+// ==================================================
 
 function clearEmployeeDetails(index) {
 
     const ids = [
+
         `empId_${index}`,
+
         `jobTitle_${index}`,
+
         `department_${index}`,
+
         `taxNumber_${index}`,
+
         `employmentCode_${index}`,
+
         `dateEngaged_${index}`
+
     ];
 
 
-    ids.forEach(id => {
+    ids.forEach(
+        id => {
 
-        const element =
-            document.getElementById(id);
+            const element =
+                document.getElementById(id);
 
-        if (element) {
-            element.value = "";
+
+            if (element) {
+
+                element.value = "";
+
+            }
+
         }
-    });
+    );
 
 
     saveEmployeeDetails();
+
+
+    updateTaxField(index);
+
 }
 
 
-// --------------------------------------------------
+// ==================================================
 // REFRESH
-// --------------------------------------------------
+// ==================================================
 
 function reloadPayslips() {
 
     loadData();
 
+
     setTimeout(
-        loadEmployeeDetails,
+        () => {
+
+            loadEmployeeDetails();
+
+        },
         50
     );
+
 }
 
 
-// --------------------------------------------------
+// ==================================================
 // HELPERS
-// --------------------------------------------------
+// ==================================================
 
 function money(value) {
 
-    return "R " +
+    return (
+        "R " +
         (
             parseFloat(value) || 0
-        ).toFixed(2);
+        ).toFixed(2)
+    );
+
 }
 
 
@@ -2577,13 +3635,41 @@ function number(value) {
     return (
         parseFloat(value) || 0
     ).toFixed(2);
+
 }
 
 
 function formatDate(value) {
 
     if (!value) {
+
         return "N/A";
+
+    }
+
+
+    /*
+        Avoid timezone shifting
+        YYYY-MM-DD dates.
+    */
+
+    if (
+        typeof value === "string" &&
+        /^\d{4}-\d{2}-\d{2}$/.test(value)
+    ) {
+
+        const parts =
+            value.split("-");
+
+
+        return (
+            parts[2] +
+            "/" +
+            parts[1] +
+            "/" +
+            parts[0]
+        );
+
     }
 
 
@@ -2596,43 +3682,56 @@ function formatDate(value) {
             date.getTime()
         )
     ) {
+
         return value;
+
     }
 
 
     return date.toLocaleDateString();
+
 }
 
 
 function escapeHTML(value) {
 
-    return String(value || "")
-        .replace(
-            /&/g,
-            "&amp;"
-        )
-        .replace(
-            /</g,
-            "&lt;"
-        )
-        .replace(
-            />/g,
-            "&gt;"
-        )
-        .replace(
-            /"/g,
-            "&quot;"
-        )
-        .replace(
-            /'/g,
-            "&#039;"
-        );
+    return String(
+        value || ""
+    )
+    .replace(
+        /&/g,
+        "&amp;"
+    )
+    .replace(
+        /</g,
+        "&lt;"
+    )
+    .replace(
+        />/g,
+        "&gt;"
+    )
+    .replace(
+        /"/g,
+        "&quot;"
+    )
+    .replace(
+        /'/g,
+        "&#039;"
+    );
+
 }
 
 
-// --------------------------------------------------
+function escapeAttribute(value) {
+
+    return escapeHTML(value);
+
+}
+
+
+// ==================================================
 // AUTO LOAD
-// --------------------------------------------------
+// ==================================================
 
 window.addEventListener(
     "load",
@@ -2640,8 +3739,13 @@ window.addEventListener(
 
         loadData();
 
+
         setTimeout(
-            loadEmployeeDetails,
+            () => {
+
+                loadEmployeeDetails();
+
+            },
             100
         );
 
@@ -2651,4 +3755,4 @@ window.addEventListener(
 </script>
 
 </body>
-   </html>
+           </html>
