@@ -877,25 +877,39 @@ function loadPayroll() {
 
 function downloadPayrollPDF() {
 
-    const saved =
-        localStorage.getItem(STORAGE_KEY);
+    // Make sure the latest calculations are saved first
+    calculatePayroll();
 
-    if (!saved) {
+    const payrollData = collectPayrollData();
 
-        alert("Please save the payroll before downloading the PDF.");
+    if (!payrollData || payrollData.length === 0) {
+        alert("No payroll data available.");
         return;
     }
 
-    const data = JSON.parse(saved);
+    const startDate =
+        document.getElementById("startDate").value;
+
+    const endDate =
+        document.getElementById("endDate").value;
+
+    const overtimeHoursPerUnit =
+        parseFloat(
+            document.getElementById("overtimeHoursPerUnit").value
+        ) || 1;
+
+    // Get HR Manager directly from the field
+    const hrName =
+        document.getElementById("hrManagerName").value.trim()
+        || "HR Manager";
 
     const { jsPDF } = window.jspdf;
 
-    const doc =
-        new jsPDF({
-            orientation: "landscape",
-            unit: "mm",
-            format: "a4"
-        });
+    const doc = new jsPDF({
+        orientation: "landscape",
+        unit: "mm",
+        format: "a4"
+    });
 
     const pageWidth =
         doc.internal.pageSize.getWidth();
@@ -903,15 +917,13 @@ function downloadPayrollPDF() {
     const pageHeight =
         doc.internal.pageSize.getHeight();
 
-    const hrName =
-        data.hrManagerName || "HR Manager";
 
-    /* ============================
+    /* ==========================================
        SUMMARY PAGE
-    ============================ */
+    ========================================== */
 
+    doc.setFont("helvetica", "bold");
     doc.setFontSize(18);
-    doc.setFont(undefined, "bold");
 
     doc.text(
         "PAYROLL CALENDAR",
@@ -920,11 +932,11 @@ function downloadPayrollPDF() {
         { align: "center" }
     );
 
-    doc.setFont(undefined, "normal");
+    doc.setFont("helvetica", "normal");
     doc.setFontSize(10);
 
     doc.text(
-        `Payroll Period: ${data.startDate} to ${data.endDate}`,
+        `Payroll Period: ${startDate} to ${endDate}`,
         10,
         25
     );
@@ -936,12 +948,12 @@ function downloadPayrollPDF() {
     );
 
     doc.text(
-        `Overtime Unit: ${data.overtimeHoursPerUnit} hour(s)`,
+        `Overtime Unit: ${overtimeHoursPerUnit} hour(s)`,
         10,
         37
     );
 
-    let y = 48;
+    let y = 47;
 
     const columns = [
         "Employee",
@@ -963,8 +975,8 @@ function downloadPayrollPDF() {
 
     let x = 10;
 
+    doc.setFont("helvetica", "bold");
     doc.setFontSize(9);
-    doc.setFont(undefined, "bold");
 
     columns.forEach((column, i) => {
 
@@ -986,27 +998,21 @@ function downloadPayrollPDF() {
 
     y += 9;
 
-    doc.setFont(undefined, "normal");
+    doc.setFont("helvetica", "normal");
 
     let grandTotal = 0;
 
-    data.employees.forEach(employee => {
+    payrollData.forEach(employee => {
 
         x = 10;
 
         const values = [
-
             employee.name,
-
-            employee.rate.toFixed(2),
-
-            employee.hoursPerDay.toFixed(2),
-
+            Number(employee.rate).toFixed(2),
+            Number(employee.hoursPerDay).toFixed(2),
             String(employee.totalPresent),
-
-            employee.totalHoursWorked.toFixed(2),
-
-            employee.totalPay.toFixed(2)
+            Number(employee.totalHoursWorked).toFixed(2),
+            Number(employee.totalPay).toFixed(2)
         ];
 
         values.forEach((value, i) => {
@@ -1029,56 +1035,99 @@ function downloadPayrollPDF() {
 
         y += 8;
 
-        grandTotal += employee.totalPay;
+        grandTotal += Number(employee.totalPay) || 0;
 
-        if (y > 175) {
+        // Start a new page if the table becomes too long
+        if (y > 165) {
 
             doc.addPage();
 
-            y = 15;
+            y = 20;
+
+            doc.setFont("helvetica", "bold");
+            doc.text(
+                "PAYROLL CALENDAR - CONTINUED",
+                pageWidth / 2,
+                12,
+                { align: "center" }
+            );
+
+            doc.setFont("helvetica", "normal");
         }
     });
 
-    doc.setFont(undefined, "bold");
+
+    /* ==========================================
+       GRAND TOTAL
+    ========================================== */
+
+    y += 8;
+
+    doc.setFont("helvetica", "bold");
+    doc.setFontSize(11);
 
     doc.text(
         `GRAND TOTAL PAYROLL: ${grandTotal.toFixed(2)}`,
         10,
-        y + 12
+        y
     );
 
-    doc.setFont(undefined, "normal");
 
+    /* ==========================================
+       HR SIGNATURE SECTION
+    ========================================== */
+
+    const signatureY = pageHeight - 35;
+
+    doc.setFont("helvetica", "normal");
+    doc.setFontSize(10);
+
+    // Signature line
     doc.line(
-        pageWidth - 90,
-        pageHeight - 25,
-        pageWidth - 25,
-        pageHeight - 25
+        pageWidth - 105,
+        signatureY,
+        pageWidth - 35,
+        signatureY
     );
 
     doc.text(
         "HR Manager Signature",
-        pageWidth - 90,
-        pageHeight - 18
+        pageWidth - 105,
+        signatureY + 6
+    );
+
+    // HR name
+    doc.text(
+        `Name: ${hrName}`,
+        pageWidth - 105,
+        signatureY + 13
+    );
+
+    // Date line
+    doc.line(
+        pageWidth - 105,
+        signatureY + 22,
+        pageWidth - 35,
+        signatureY + 22
     );
 
     doc.text(
-        `Name: ${hrName}`,
-        pageWidth - 90,
-        pageHeight - 12
+        "Date",
+        pageWidth - 105,
+        signatureY + 28
     );
 
 
-    /* ============================
-       DETAILED EMPLOYEE PAGES
-    ============================ */
+    /* ==========================================
+       INDIVIDUAL EMPLOYEE PAYROLL PAGES
+    ========================================== */
 
-    data.employees.forEach(employee => {
+    payrollData.forEach(employee => {
 
         doc.addPage();
 
+        doc.setFont("helvetica", "bold");
         doc.setFontSize(16);
-        doc.setFont(undefined, "bold");
 
         doc.text(
             "EMPLOYEE PAYROLL RECORD",
@@ -1087,7 +1136,7 @@ function downloadPayrollPDF() {
             { align: "center" }
         );
 
-        doc.setFont(undefined, "normal");
+        doc.setFont("helvetica", "normal");
         doc.setFontSize(10);
 
         doc.text(
@@ -1097,19 +1146,19 @@ function downloadPayrollPDF() {
         );
 
         doc.text(
-            `Rate/Hour: ${employee.rate.toFixed(2)}`,
+            `Rate / Hour: ${Number(employee.rate).toFixed(2)}`,
             10,
             34
         );
 
         doc.text(
-            `Normal Hours/Day: ${employee.hoursPerDay.toFixed(2)}`,
+            `Hours / Day: ${Number(employee.hoursPerDay).toFixed(2)}`,
             10,
             41
         );
 
         doc.text(
-            `Payroll Period: ${data.startDate} to ${data.endDate}`,
+            `Payroll Period: ${startDate} to ${endDate}`,
             10,
             48
         );
@@ -1119,22 +1168,22 @@ function downloadPayrollPDF() {
         const detailColumns = [
             "Date",
             "Attendance",
-            "Late Hrs",
-            "OT Hrs",
-            "OT %"
+            "Late Hours",
+            "Overtime Hours",
+            "Overtime %"
         ];
 
         const detailWidths = [
             55,
             45,
             40,
-            40,
+            45,
             40
         ];
 
         x = 10;
 
-        doc.setFont(undefined, "bold");
+        doc.setFont("helvetica", "bold");
 
         detailColumns.forEach((column, i) => {
 
@@ -1156,19 +1205,26 @@ function downloadPayrollPDF() {
 
         top += 8;
 
-        doc.setFont(undefined, "normal");
+        doc.setFont("helvetica", "normal");
 
         employee.dailyRecords.forEach(record => {
 
-            if (top > 175) {
+            if (top > 165) {
 
                 doc.addPage();
 
-                top = 15;
+                top = 18;
+
+                doc.setFont("helvetica", "bold");
+
+                doc.text(
+                    `${employee.name} - PAYROLL CONTINUED`,
+                    pageWidth / 2,
+                    10,
+                    { align: "center" }
+                );
 
                 x = 10;
-
-                doc.setFont(undefined, "bold");
 
                 detailColumns.forEach((column, i) => {
 
@@ -1190,21 +1246,16 @@ function downloadPayrollPDF() {
 
                 top += 8;
 
-                doc.setFont(undefined, "normal");
+                doc.setFont("helvetica", "normal");
             }
 
             x = 10;
 
             const values = [
-
                 record.date,
-
                 record.attendance,
-
                 Number(record.lateHours).toFixed(2),
-
                 Number(record.overtimeHours).toFixed(2),
-
                 `${Number(record.overtimePercent).toFixed(2)}%`
             ];
 
@@ -1229,9 +1280,14 @@ function downloadPayrollPDF() {
             top += 8;
         });
 
+
+        /* ======================================
+           EMPLOYEE TOTALS
+        ====================================== */
+
         top += 10;
 
-        doc.setFont(undefined, "bold");
+        doc.setFont("helvetica", "bold");
 
         doc.text(
             `Total Present: ${employee.totalPresent}`,
@@ -1240,45 +1296,78 @@ function downloadPayrollPDF() {
         );
 
         doc.text(
-            `Total Hours Worked: ${employee.totalHoursWorked.toFixed(2)}`,
+            `Total Hours Worked: ${Number(
+                employee.totalHoursWorked
+            ).toFixed(2)}`,
             10,
             top + 7
         );
 
         doc.text(
-            `Total Pay: ${employee.totalPay.toFixed(2)}`,
+            `Total Pay: ${Number(
+                employee.totalPay
+            ).toFixed(2)}`,
             10,
             top + 14
         );
 
-        doc.setFont(undefined, "normal");
+
+        /* ======================================
+           HR SIGNATURE
+        ====================================== */
+
+        const employeeSignatureY =
+            pageHeight - 35;
+
+        doc.setFont("helvetica", "normal");
+        doc.setFontSize(10);
 
         doc.line(
-            pageWidth - 90,
-            pageHeight - 25,
-            pageWidth - 25,
-            pageHeight - 25
+            pageWidth - 105,
+            employeeSignatureY,
+            pageWidth - 35,
+            employeeSignatureY
         );
 
         doc.text(
             "HR Manager Signature",
-            pageWidth - 90,
-            pageHeight - 18
+            pageWidth - 105,
+            employeeSignatureY + 6
         );
 
         doc.text(
-            `HR: ${hrName}`,
-            pageWidth - 90,
-            pageHeight - 12
+            `Name: ${hrName}`,
+            pageWidth - 105,
+            employeeSignatureY + 13
+        );
+
+        doc.line(
+            pageWidth - 105,
+            employeeSignatureY + 22,
+            pageWidth - 35,
+            employeeSignatureY + 22
+        );
+
+        doc.text(
+            "Date",
+            pageWidth - 105,
+            employeeSignatureY + 28
         );
     });
 
+
+    /* ==========================================
+       DOWNLOAD
+    ========================================== */
+
     const filename =
-        `Payroll_${data.startDate}_to_${data.endDate}.pdf`;
+        `Payroll_${startDate}_to_${endDate}.pdf`;
 
     doc.save(filename);
 
-    showStatus("Complete payroll PDF downloaded.");
+    showStatus(
+        "Payroll PDF downloaded with HR signature lines."
+    );
 }
 
 
@@ -1347,4 +1436,4 @@ function showStatus(message) {
 </script>
 
 </body>
-            </html>
+</html>
