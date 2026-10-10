@@ -1,0 +1,683 @@
+<!DOCTYPE html><html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0"><title>Payroll Hub</title><style>
+    * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+    }
+
+    :root {
+        --navy: #06152f;
+        --navy2: #0a2042;
+        --yellow: #ffd400;
+        --yellow2: #ffea63;
+        --white: #ffffff;
+        --muted: #aebbd0;
+        --card: rgba(12, 35, 69, 0.88);
+        --border: rgba(255, 212, 0, 0.25);
+    }
+
+    html, body {
+        min-height: 100%;
+    }
+
+    body {
+        font-family: Arial, Helvetica, sans-serif;
+        color: var(--white);
+        background:
+            repeating-linear-gradient(
+                135deg,
+                transparent 0px,
+                transparent 85px,
+                rgba(255, 212, 0, 0.10) 85px,
+                rgba(255, 212, 0, 0.10) 105px,
+                transparent 105px,
+                transparent 190px
+            ),
+            linear-gradient(145deg, #030d20, #071b39 50%, #041128);
+        min-height: 100vh;
+        overflow-x: hidden;
+    }
+
+    body::before {
+        content: "";
+        position: fixed;
+        top: 0;
+        right: -120px;
+        width: 330px;
+        height: 100%;
+        background:
+            repeating-linear-gradient(
+                135deg,
+                transparent 0px,
+                transparent 45px,
+                rgba(255, 212, 0, 0.18) 45px,
+                rgba(255, 212, 0, 0.18) 62px
+            );
+        pointer-events: none;
+        z-index: 0;
+    }
+
+    .app {
+        position: relative;
+        z-index: 1;
+        width: 100%;
+        max-width: 1100px;
+        margin: auto;
+        padding: 18px;
+    }
+
+    /* HEADER */
+    .topbar {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 15px;
+        padding: 16px 20px;
+        border-radius: 20px;
+        background: rgba(3, 17, 39, 0.92);
+        border: 1px solid rgba(255, 212, 0, 0.28);
+        box-shadow: 0 15px 40px rgba(0,0,0,.35);
+        backdrop-filter: blur(10px);
+    }
+
+    .brand {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+    }
+
+    .brand-logo {
+        width: 48px;
+        height: 48px;
+        border-radius: 14px;
+        background: var(--yellow);
+        color: var(--navy);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        font-size: 25px;
+        font-weight: 900;
+        box-shadow: 0 0 25px rgba(255,212,0,.25);
+    }
+
+    .brand-text h1 {
+        font-size: 20px;
+        letter-spacing: .5px;
+    }
+
+    .brand-text span {
+        color: var(--muted);
+        font-size: 12px;
+    }
+
+    .status {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        background: rgba(255,212,0,.09);
+        border: 1px solid rgba(255,212,0,.25);
+        padding: 9px 13px;
+        border-radius: 30px;
+        color: var(--yellow);
+        font-size: 12px;
+        font-weight: bold;
+    }
+
+    .status-dot {
+        width: 8px;
+        height: 8px;
+        background: #35e878;
+        border-radius: 50%;
+        box-shadow: 0 0 10px #35e878;
+    }
+
+    /* HERO */
+    .hero {
+        margin-top: 22px;
+        padding: 30px 25px;
+        border-radius: 25px;
+        background:
+            linear-gradient(
+                120deg,
+                rgba(255,212,0,.16),
+                rgba(9,39,76,.94) 42%,
+                rgba(4,18,40,.97)
+            );
+        border: 1px solid var(--border);
+        position: relative;
+        overflow: hidden;
+        box-shadow: 0 20px 50px rgba(0,0,0,.35);
+    }
+
+    .hero::after {
+        content: "PAYROLL";
+        position: absolute;
+        right: -30px;
+        bottom: -25px;
+        font-size: 80px;
+        font-weight: 900;
+        color: rgba(255,212,0,.035);
+        transform: rotate(-8deg);
+    }
+
+    .hero h2 {
+        font-size: clamp(28px, 6vw, 48px);
+        line-height: 1;
+        margin-bottom: 10px;
+    }
+
+    .hero h2 span {
+        color: var(--yellow);
+    }
+
+    .hero p {
+        color: var(--muted);
+        max-width: 600px;
+        line-height: 1.6;
+        font-size: 14px;
+    }
+
+    /* FREE ACCESS */
+    .trial-card {
+        margin-top: 16px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 15px;
+        padding: 16px 18px;
+        border-radius: 17px;
+        background: rgba(255,212,0,.08);
+        border: 1px solid rgba(255,212,0,.24);
+    }
+
+    .trial-left {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+    }
+
+    .trial-icon {
+        width: 40px;
+        height: 40px;
+        border-radius: 12px;
+        background: var(--yellow);
+        color: var(--navy);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        font-size: 20px;
+        font-weight: bold;
+    }
+
+    .trial-text strong {
+        display: block;
+        font-size: 13px;
+    }
+
+    .trial-text small {
+        color: var(--muted);
+        font-size: 11px;
+    }
+
+    .trial-time {
+        font-size: 20px;
+        font-weight: 900;
+        color: var(--yellow);
+        white-space: nowrap;
+    }
+
+    /* SECTION */
+    .section-title {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin: 28px 2px 13px;
+    }
+
+    .section-title h3 {
+        font-size: 18px;
+    }
+
+    .section-title span {
+        color: var(--yellow);
+        font-size: 11px;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+    }
+
+    /* GRID */
+    .buttons {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 15px;
+    }
+
+    .buttons button {
+        min-height: 165px;
+        position: relative;
+        overflow: hidden;
+        border: 1px solid var(--border);
+        border-radius: 20px;
+        background:
+            linear-gradient(
+                145deg,
+                rgba(18,49,89,.96),
+                rgba(5,22,47,.96)
+            );
+        color: white;
+        cursor: pointer;
+        padding: 18px;
+        text-align: left;
+        transition:
+            transform .25s ease,
+            border-color .25s ease,
+            box-shadow .25s ease;
+    }
+
+    .buttons button::before {
+        content: "";
+        position: absolute;
+        width: 100px;
+        height: 100px;
+        right: -45px;
+        top: -45px;
+        border-radius: 50%;
+        background: rgba(255,212,0,.08);
+    }
+
+    .buttons button:hover {
+        transform: translateY(-7px);
+        border-color: rgba(255,212,0,.8);
+        box-shadow:
+            0 18px 35px rgba(0,0,0,.35),
+            0 0 25px rgba(255,212,0,.08);
+    }
+
+    .buttons button:active {
+        transform: scale(.97);
+    }
+
+    .buttons button img {
+        width: 58px;
+        height: 58px;
+        object-fit: contain;
+        margin-bottom: 17px;
+        transition: transform .3s ease;
+        filter: drop-shadow(0 5px 10px rgba(0,0,0,.3));
+    }
+
+    .buttons button:hover img {
+        transform: scale(1.12) rotate(-3deg);
+    }
+
+    .button-title {
+        display: block;
+        font-size: 15px;
+        font-weight: 800;
+        margin-bottom: 5px;
+    }
+
+    .button-subtitle {
+        display: block;
+        color: var(--muted);
+        font-size: 11px;
+        line-height: 1.4;
+    }
+
+    .arrow {
+        position: absolute;
+        right: 16px;
+        bottom: 15px;
+        color: var(--yellow);
+        font-size: 18px;
+        font-weight: bold;
+    }
+
+    /* FOOTER */
+    footer {
+        text-align: center;
+        color: #71839e;
+        font-size: 11px;
+        padding: 28px 10px 10px;
+    }
+
+    footer span {
+        color: var(--yellow);
+    }
+
+    /* MOBILE */
+    @media (max-width: 800px) {
+        .buttons {
+            grid-template-columns: repeat(2, 1fr);
+        }
+    }
+
+    @media (max-width: 520px) {
+
+        .app {
+            padding: 12px;
+        }
+
+        .topbar {
+            padding: 13px;
+            border-radius: 17px;
+        }
+
+        .brand-logo {
+            width: 42px;
+            height: 42px;
+            font-size: 21px;
+        }
+
+        .brand-text h1 {
+            font-size: 16px;
+        }
+
+        .status {
+            padding: 8px 10px;
+            font-size: 10px;
+        }
+
+        .hero {
+            padding: 25px 19px;
+            border-radius: 20px;
+        }
+
+        .hero h2 {
+            font-size: 31px;
+        }
+
+        .trial-card {
+            align-items: flex-start;
+        }
+
+        .trial-time {
+            font-size: 17px;
+        }
+
+        .buttons {
+            gap: 10px;
+        }
+
+        .buttons button {
+            min-height: 145px;
+            padding: 15px;
+            border-radius: 17px;
+        }
+
+        .buttons button img {
+            width: 50px;
+            height: 50px;
+            margin-bottom: 12px;
+        }
+
+        .button-title {
+            font-size: 13px;
+        }
+
+        .button-subtitle {
+            font-size: 10px;
+        }
+    }
+
+    @media (max-width: 360px) {
+        .buttons {
+            grid-template-columns: 1fr;
+        }
+    }
+</style></head><body><div class="app"><!-- HEADER -->
+<header class="topbar">
+
+    <div class="brand">
+
+        <div class="brand-logo">
+            P
+        </div>
+
+        <div class="brand-text">
+            <h1>PAYROLL HUB</h1>
+            <span>Smart business tools</span>
+        </div>
+
+    </div>
+
+    <div class="status">
+        <span class="status-dot"></span>
+        ONLINE
+    </div>
+
+</header>
+
+
+<!-- HERO -->
+<section class="hero">
+
+    <h2>
+        Welcome to your<br>
+        <span>Payroll Hub.</span>
+    </h2>
+
+    <p>
+        Everything you need for payroll, payslips,
+        meetings, support and business access —
+        all in one place.
+    </p>
+
+</section>
+
+
+<!-- FREE ACCESS -->
+<div class="trial-card">
+
+    <div class="trial-left">
+
+        <div class="trial-icon">
+            ✓
+        </div>
+
+        <div class="trial-text">
+
+            <strong>
+                FREE ACCESS
+            </strong>
+
+            <small>
+                All Payroll Hub services are available for free.
+            </small>
+
+        </div>
+
+    </div>
+
+    <div class="trial-time">
+        FREE
+    </div>
+
+</div>
+
+
+<!-- QUICK ACCESS -->
+<div class="section-title">
+
+    <h3>Quick Access</h3>
+
+    <span>7 Services</span>
+
+</div>
+
+
+<div class="buttons">
+
+    <!-- PAYROLL -->
+    <button
+        onclick="window.location.href='payroll.html'"
+    >
+
+        <img
+            src="payroll.png"
+            alt="Payroll Icon"
+        >
+
+        <span class="button-title">
+            Payroll
+        </span>
+
+        <span class="button-subtitle">
+            Access payroll services
+        </span>
+
+        <span class="arrow">›</span>
+
+    </button>
+
+
+    <!-- PAYSLIP -->
+    <button
+        onclick="window.location.href='payslip.html'"
+    >
+
+        <img
+            src="payslip.png"
+            alt="Payslip Icon"
+        >
+
+        <span class="button-title">
+            Payslip Designer
+        </span>
+
+        <span class="button-subtitle">
+            Design your payslip
+        </span>
+
+        <span class="arrow">›</span>
+
+    </button>
+
+
+    <!-- ABOUT -->
+    <button
+        onclick="window.location.href='aboutus.html'"
+    >
+
+        <img
+            src="about.png"
+            alt="About Us Icon"
+        >
+
+        <span class="button-title">
+            Who Are We?
+        </span>
+
+        <span class="button-subtitle">
+            Learn more about us
+        </span>
+
+        <span class="arrow">›</span>
+
+    </button>
+
+
+    <!-- BOT -->
+    <button
+        onclick="window.location.href='bot.html'"
+    >
+
+        <img
+            src="bot.png"
+            alt="Bot Icon"
+        >
+
+        <span class="button-title">
+            Payroll Assistant
+        </span>
+
+        <span class="button-subtitle">
+            Chat with our bot
+        </span>
+
+        <span class="arrow">›</span>
+
+    </button>
+
+
+    <!-- DEDUCTIONS -->
+    <button
+        onclick="window.location.href='diductions.html'"
+    >
+
+        <img
+            src="diduction.png"
+            alt="Deductions Icon"
+        >
+
+        <span class="button-title">
+            Deductions
+        </span>
+
+        <span class="button-subtitle">
+            Access deduction services
+        </span>
+
+        <span class="arrow">›</span>
+
+    </button>
+
+
+    <!-- MEETING -->
+    <button
+        onclick="window.location.href='meetingagenda.html'"
+    >
+
+        <img
+            src="book.png"
+            alt="Meeting Icon"
+        >
+
+        <span class="button-title">
+            Meeting Minutes
+        </span>
+
+        <span class="button-subtitle">
+            Write your meeting minutes
+        </span>
+
+        <span class="arrow">›</span>
+
+    </button>
+
+
+    <!-- CONTACT -->
+    <button
+        onclick="window.location.href='contactus.html'"
+    >
+
+        <img
+            src="Contact.png"
+            alt="Contact Icon"
+        >
+
+        <span class="button-title">
+            Contact Us
+        </span>
+
+        <span class="button-subtitle">
+            Get in touch with our team
+        </span>
+
+        <span class="arrow">›</span>
+
+    </button>
+
+</div>
+
+
+<footer>
+    Payroll Hub • Secure business tools •
+    <span>100% FREE ACCESS</span>
+</footer>
+
+</div></body>
+          </html>
