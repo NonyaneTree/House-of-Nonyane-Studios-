@@ -1,0 +1,434 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Payslip Designer Payment</title>
+
+<style>
+    * {
+        box-sizing: border-box;
+    }
+
+    body {
+        margin: 0;
+        min-height: 100vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-family: Arial, sans-serif;
+        background: #f4f4f4;
+        padding: 20px;
+    }
+
+    .container {
+        width: 100%;
+        max-width: 600px;
+        background: #fff;
+        padding: 30px 20px;
+        border-radius: 12px;
+        text-align: center;
+        box-shadow: 0 5px 25px rgba(0,0,0,0.12);
+    }
+
+    h2 {
+        margin-top: 0;
+        color: #222;
+    }
+
+    p {
+        font-size: 16px;
+        line-height: 1.5;
+        color: #555;
+    }
+
+    .price {
+        font-size: 28px;
+        font-weight: bold;
+        color: #28a745;
+        margin: 20px 0;
+    }
+
+    button {
+        width: 100%;
+        max-width: 300px;
+        padding: 13px 20px;
+        font-size: 17px;
+        font-weight: bold;
+        background: #28a745;
+        color: white;
+        border: none;
+        cursor: pointer;
+        border-radius: 6px;
+        margin-top: 10px;
+    }
+
+    button:hover {
+        background: #218838;
+    }
+
+    button:disabled {
+        background: #999;
+        cursor: not-allowed;
+    }
+
+    #status {
+        min-height: 24px;
+        margin-top: 18px;
+        font-weight: bold;
+    }
+
+    .success {
+        color: #28a745;
+    }
+
+    .error {
+        color: #dc3545;
+    }
+
+    .info {
+        color: #007bff;
+    }
+
+    .test-button {
+        background: #555;
+        font-size: 13px;
+        max-width: 180px;
+        margin-top: 25px;
+    }
+
+    .test-button:hover {
+        background: #333;
+    }
+</style>
+
+<!-- Yoco SDK -->
+<script src="https://js.yoco.com/sdk/v1/yoco-sdk-web.js"></script>
+
+</head>
+
+<body>
+
+<div class="container" id="paymentContainer">
+
+    <h2>Unlock Payslip Designer</h2>
+
+    <p>
+        Pay once and get unlimited payslip generation
+        for <strong>31 days</strong>.
+    </p>
+
+    <div class="price">R100</div>
+
+    <button id="payBtn">
+        Pay Now
+    </button>
+
+    <p id="status"></p>
+
+    <!-- Testing only -->
+    <button id="clearAccessBtn" class="test-button">
+        Clear Test Access
+    </button>
+
+</div>
+
+<script>
+
+const payBtn = document.getElementById("payBtn");
+const status = document.getElementById("status");
+const clearAccessBtn = document.getElementById("clearAccessBtn");
+
+const ACCESS_KEY = "payslipAccessExpiry";
+const PAYSLIP_PAGE = "payslip.html";
+const ACCESS_DAYS = 31;
+
+
+/* =========================================================
+   STATUS HELPER
+========================================================= */
+
+function showStatus(message, type = "info") {
+
+    status.innerText = message;
+
+    status.className = "";
+
+    if (type === "success") {
+        status.classList.add("success");
+    }
+
+    if (type === "error") {
+        status.classList.add("error");
+    }
+
+    if (type === "info") {
+        status.classList.add("info");
+    }
+
+    console.log("[Payslip Payment]", message);
+}
+
+
+/* =========================================================
+   CHECK EXISTING ACCESS
+========================================================= */
+
+function checkAccess() {
+
+    const accessExpiry = localStorage.getItem(ACCESS_KEY);
+
+    if (!accessExpiry) {
+        return false;
+    }
+
+    const expiryDate = new Date(accessExpiry);
+    const now = new Date();
+
+    if (
+        !isNaN(expiryDate.getTime()) &&
+        expiryDate > now
+    ) {
+
+        showStatus(
+            "You already have access. Opening Payslip Designer...",
+            "success"
+        );
+
+        payBtn.disabled = true;
+
+        setTimeout(() => {
+            window.location.href = PAYSLIP_PAGE;
+        }, 1200);
+
+        return true;
+    }
+
+    // Expired access
+    localStorage.removeItem(ACCESS_KEY);
+
+    return false;
+}
+
+
+/* =========================================================
+   CHECK YOCO SDK
+========================================================= */
+
+console.log(
+    "YocoSDK status:",
+    typeof YocoSDK
+);
+
+let yoco = null;
+
+if (typeof YocoSDK === "undefined") {
+
+    showStatus(
+        "Payment system could not load. Please refresh the page.",
+        "error"
+    );
+
+    payBtn.disabled = true;
+
+} else {
+
+    try {
+
+        yoco = new YocoSDK({
+            publicKey: "pk_live_88415492P4RYmO49b224"
+        });
+
+        console.log("Yoco initialized successfully.");
+
+    } catch (error) {
+
+        console.error(
+            "Yoco initialization error:",
+            error
+        );
+
+        showStatus(
+            "Unable to initialize the payment system.",
+            "error"
+        );
+
+        payBtn.disabled = true;
+    }
+}
+
+
+/* =========================================================
+   PAY BUTTON
+========================================================= */
+
+payBtn.addEventListener("click", function () {
+
+    console.log("PAY BUTTON CLICKED");
+
+    /* Check access again */
+    if (checkAccess()) {
+        return;
+    }
+
+    /* Check Yoco */
+    if (!yoco) {
+
+        showStatus(
+            "Payment system is unavailable. Please refresh the page.",
+            "error"
+        );
+
+        return;
+    }
+
+    /* Prevent double click */
+    payBtn.disabled = true;
+    payBtn.innerText = "Opening Payment...";
+
+    showStatus(
+        "Opening secure payment window...",
+        "info"
+    );
+
+    try {
+
+        yoco.showPopup({
+
+            amountInCents: 10000,
+
+            currency: "ZAR",
+
+            name: "Payslip Designer Access",
+
+            description: "31 days unlimited access",
+
+            callback: function(response) {
+
+                console.log(
+                    "Yoco callback response:",
+                    response
+                );
+
+                /* -------------------------
+                   PAYMENT ERROR
+                ------------------------- */
+
+                if (
+                    response &&
+                    response.error
+                ) {
+
+                    showStatus(
+                        "Payment failed: " +
+                        (
+                            response.error.message ||
+                            "Unknown payment error"
+                        ),
+                        "error"
+                    );
+
+                    payBtn.disabled = false;
+                    payBtn.innerText = "Pay Now";
+
+                    return;
+                }
+
+
+                /* -------------------------
+                   PAYMENT SUCCESS CALLBACK
+                ------------------------- */
+
+                showStatus(
+                    "Payment successful! Unlocking Payslip Designer...",
+                    "success"
+                );
+
+
+                /* Calculate 31 days */
+
+                const expiryDate = new Date();
+
+                expiryDate.setDate(
+                    expiryDate.getDate() + ACCESS_DAYS
+                );
+
+
+                /* Save access */
+
+                localStorage.setItem(
+                    ACCESS_KEY,
+                    expiryDate.toISOString()
+                );
+
+
+                console.log(
+                    "Access saved until:",
+                    expiryDate.toISOString()
+                );
+
+
+                /* Redirect */
+
+                setTimeout(() => {
+
+                    window.location.href = PAYSLIP_PAGE;
+
+                }, 1200);
+
+            }
+
+        });
+
+    } catch (error) {
+
+        console.error(
+            "Payment popup error:",
+            error
+        );
+
+        showStatus(
+            "Could not open the payment window: " +
+            error.message,
+            "error"
+        );
+
+        payBtn.disabled = false;
+        payBtn.innerText = "Pay Now";
+    }
+
+});
+
+
+/* =========================================================
+   CLEAR ACCESS - TESTING
+========================================================= */
+
+clearAccessBtn.addEventListener("click", function () {
+
+    localStorage.removeItem(ACCESS_KEY);
+
+    showStatus(
+        "Test access cleared. You can test payment again.",
+        "info"
+    );
+
+    payBtn.disabled = false;
+    payBtn.innerText = "Pay Now";
+
+    console.log(
+        "payslipAccessExpiry removed from localStorage"
+    );
+});
+
+
+/* =========================================================
+   RUN ACCESS CHECK
+========================================================= */
+
+checkAccess();
+
+</script>
+
+</body>
+  </html>
