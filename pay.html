@@ -236,10 +236,10 @@ if (typeof YocoSDK === "undefined") {
     try {
 
         yoco = new YocoSDK({
-            publicKey: "pk_live_88415492P4RYmO49b224"
+            publicKey: "pk_test_16b69d26P4RYmO435e94"
         });
 
-        console.log("Yoco initialized successfully.");
+        console.log("Yoco TEST mode initialized successfully.");
 
     } catch (error) {
 
@@ -287,7 +287,7 @@ payBtn.addEventListener("click", function () {
     payBtn.innerText = "Opening Payment...";
 
     showStatus(
-        "Opening secure payment window...",
+        "Opening secure test payment window...",
         "info"
     );
 
@@ -431,4 +431,8 @@ checkAccess();
 </script>
 
 </body>
-  </html>
+</html>
+
+One important thing: this is now using your "pk_test_..." key. However, the current page grants the 31-day access after the browser receives the checkout callback. For a real paid system, you should verify the payment server-side before granting access, because "localStorage" can be modified by the user.
+
+For testing the Yoco checkout itself, though, this version is ready to use.
